@@ -72,6 +72,7 @@ public partial class {vmClassDeclaration.Identifier}ViewModel : INotifyPropertyC
         {{
             _ = _validationErrors.Remove(error.Key);
             OnPropertyChanged($""{{error.Key}}Error"");
+            OnPropertyChanged($""{{error.Key}}HasError"");
         }}
 
         var context = new ValidationContext(this);
