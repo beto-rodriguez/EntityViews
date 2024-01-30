@@ -1,16 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using EntityViews.Attributes;
 
 namespace Models;
 
-[GenerateViewModel]
-public class TodoItem
+public class ToDoModel
 {
     public int Id { get; set; }
-
     [Required]
     [MaxLength(50)]
+    [Display(Name = "Title")]
     public string Name { get; set; } = string.Empty;
-
-    public bool IsComplete { get; set; }
 }

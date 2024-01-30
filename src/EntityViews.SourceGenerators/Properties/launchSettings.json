@@ -2,7 +2,7 @@
   "profiles": {
     "Profile 2": {
       "commandName": "DebugRoslynComponent",
-      "targetProject": "..\\..\\samples\\Models\\Models.csproj"
+      "targetProject": "..\\..\\samples\\MauiApp1\\MauiApp1.csproj"
     }
   }
 }

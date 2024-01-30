@@ -1,14 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:models="clr-namespace:Models;assembly=Models"
-             x:Class="MauiApp1.MainPage"
-             x:DataType="models:TodoItemViewModel">
+             xmlns:viewModels="clr-namespace:MauiApp1.ViewModels"
+             x:Class="MauiApp1.MainPage">
 
     <ContentPage.BindingContext>
-        <models:TodoItemViewModel/>
+        <viewModels:ToDoViewModel />
     </ContentPage.BindingContext>
-    
+
     <StackLayout Orientation="Vertical">
         <Label Text="Name" />
 
@@ -19,7 +18,7 @@
                 </DataTrigger>
             </Entry.Triggers>
         </Entry>
-        
+
         <Label Text="{Binding NameError}" TextColor="Red"/>
 
         <Button Text="Save" Command="{Binding SaveCommand}"/>

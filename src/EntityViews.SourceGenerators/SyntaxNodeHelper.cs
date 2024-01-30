@@ -1,33 +1,76 @@
-﻿using EntityViews.Attributes;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.ComponentModel.DataAnnotations;
 
 namespace EntityViews.SourceGenerators;
 
-internal static class SyntaxNodeHelper
+public static class SyntaxNodeHelper
 {
     private static readonly HashSet<string> s_dataAnnotation =
     [
-        nameof(CreditCardAttribute),
-        nameof(CustomValidationAttribute),
-        nameof(DataTypeAttribute),
-        nameof(DisplayAttribute),
-        nameof(DisplayColumnAttribute),
-        nameof(DisplayFormatAttribute),
-        nameof(EditableAttribute),
-        nameof(EmailAddressAttribute),
-        nameof(FileExtensionsAttribute),
-        nameof(MaxLengthAttribute),
-        nameof(MinLengthAttribute),
-        nameof(PhoneAttribute),
-        nameof(RegularExpressionAttribute),
-        nameof(RequiredAttribute),
-        nameof(RangeAttribute),
-        nameof(StringLengthAttribute),
-        nameof(TimestampAttribute),
-        nameof(UrlAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(CreditCardAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(CustomValidationAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(DataTypeAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(DisplayAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(DisplayColumnAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(DisplayFormatAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(EditableAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(EmailAddressAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(FileExtensionsAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(MaxLengthAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(MinLengthAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(PhoneAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(RegularExpressionAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(RequiredAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(RangeAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(StringLengthAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(TimestampAttribute),
+        "System.ComponentModel.DataAnnotations." + nameof(UrlAttribute),
     ];
+
+    public class ViewModelAnalysis(
+        ClassDeclarationSyntax classDeclaration,
+        ITypeSymbol viewModelOf,
+        HashSet<string> ignore)
+    {
+        public static Dictionary<string, ITypeSymbol> TargetTypes = [];
+
+        public ClassDeclarationSyntax ClassDeclaration { get; } = classDeclaration;
+        public ITypeSymbol ViewModelOf { get; } = viewModelOf;
+        public HashSet<string> Ignore { get; } = ignore;
+    }
+
+    public static ITypeSymbol? FindViewModelOfSymbol(this ViewModelAnalysis analysis, Compilation compilation)
+    {
+        var lookInCurrentAssembly = compilation.GetTypeByMetadataName(analysis.ViewModelOf.ToDisplayString());
+        if (lookInCurrentAssembly is not null) return lookInCurrentAssembly;
+
+        // if we can't find it in the current assembly, we'll try to find it in the referenced assemblies.
+        // NOTE: is this even necessary?
+        var assemblyName = analysis.ViewModelOf.ContainingAssembly.ToDisplayString();
+
+        var assemblySymbol = compilation.SourceModule
+            .ReferencedAssemblySymbols
+            .FirstOrDefault(x => x.ToDisplayString() == assemblyName);
+
+        var namespaceSymbol = assemblySymbol?.GlobalNamespace.GetNamespaceMembers()
+            .FirstOrDefault(m => m.Name == analysis.ViewModelOf.ContainingNamespace.Name);
+
+        return namespaceSymbol?.FindTypes().FirstOrDefault(x => x.Name == analysis.ViewModelOf.Name);
+    }
+
+    private static IEnumerable<ITypeSymbol> FindTypes(this INamespaceSymbol root)
+    {
+        foreach (var namespaceOrTypeSymbol in root.GetMembers())
+        {
+            if (namespaceOrTypeSymbol is INamespaceSymbol @namespace)
+                foreach (var nested in FindTypes(@namespace))
+                    yield return nested;
+
+            else if (namespaceOrTypeSymbol is ITypeSymbol type)
+                yield return type;
+        }
+    }
 
     public static string? GetNameSpace(this SyntaxNode syntaxNode)
     {
@@ -43,40 +86,26 @@ internal static class SyntaxNodeHelper
         return null;
     }
 
-    public static string AsField(this PropertyDeclarationSyntax property)
+    public static string AsValidableProperty(this IPropertySymbol property)
     {
-        return $@"_{property.Identifier.ToString().ToLower()}";
-    }
+        var annotations = property
+            .GetAttributes()
+            .Where(x => s_dataAnnotation.Contains(x.AttributeClass?.ToDisplayString() ?? "?"))
+            .Aggregate(string.Empty, (currentString, annotation) => currentString +
+                (currentString.Length > 0 ? "\r\n" : "") +
+                $"    [{annotation}]");
 
-    public static AttributeAnalysis Analyze(this PropertyDeclarationSyntax property)
-    {
-        var analyzer = new AttributeAnalysis();
+        var initialValue = string.Empty;
+        if (property.Type.ToString() == "string") initialValue = " = string.Empty"; // special case for strings.
 
-        var ignorable = nameof(IgnoreViewModelProperty);
+        var propertyField = $"_{property.Name.ToLower()}";
 
-        foreach (var attributeList in property.AttributeLists)
-        {
-            foreach (var attribute in attributeList.Attributes)
-            {
-                if (attribute.Name.GetText().ToString() == ignorable) analyzer.Ignore = true;
-                if (IsDataAnnotation(attribute)) analyzer.DataAnnotations.Add(attribute);
-            }
-        }
-
-        return analyzer;
-    }
-
-    public static bool IsDataAnnotation(this AttributeSyntax attribute)
-    {
-        var name = attribute.Name.GetText().ToString();
-        if (!name.EndsWith("Attribute")) name += "Attribute";
-        return s_dataAnnotation.Contains(name);
-    }
-
-    public class AttributeAnalysis
-    {
-        public bool Ignore { get; set; }
-
-        public List<AttributeSyntax> DataAnnotations { get; set; } = [];
+        return
+@$"
+        private {property.Type} {propertyField}{initialValue};{(annotations.Length > 0 ? "\r\n" + annotations : string.Empty)}
+        public {property.Type} {property.Name} {{ get => {propertyField}; set => SetProperty(ref {propertyField}, value, nameof({property.Name})); }}
+        public string {property.Name}Error => GetError(nameof({property.Name}));
+        public bool {property.Name}HasError => {property.Name}Error.Length > 0;
+";
     }
 }
