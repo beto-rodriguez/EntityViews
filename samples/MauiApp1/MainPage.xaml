@@ -17,7 +17,6 @@
     </ContentPage.BindingContext>
 
     <StackLayout Orientation="Vertical">
-        <Label Text="{x:Static resources:AppResources.DescriptionField}"/>
 
         <entityForms:NameInput />
         <entityForms:DescriptionInput />
