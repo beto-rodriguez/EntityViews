@@ -9,19 +9,10 @@
     </ContentPage.BindingContext>
 
     <StackLayout Orientation="Vertical">
-        <Label Text="Name" />
-
-        <Entry Text="{Binding Name}">
-            <Entry.Triggers>
-                <DataTrigger TargetType="Entry" Binding="{Binding NameHasError}" Value="True">
-                    <Setter Property="BackgroundColor" Value="#50ff0000"/>
-                </DataTrigger>
-            </Entry.Triggers>
-        </Entry>
-
-        <Label Text="{Binding NameError}" TextColor="Red"/>
 
         <Button Text="Save" Command="{Binding SaveCommand}"/>
+
+        
     </StackLayout>
 
 </ContentPage>

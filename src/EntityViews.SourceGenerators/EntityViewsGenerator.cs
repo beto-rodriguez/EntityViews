@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using EntityViews.Attributes;
+using EntityViews.SourceGenerators.Templates;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -7,11 +8,8 @@ using static EntityViews.SourceGenerators.SyntaxNodeHelper;
 
 namespace EntityViews.SourceGenerators;
 
-// based on:
-// https://andrewlock.net/exploring-dotnet-6-part-9-source-generator-updates-incremental-generators/
-
 [Generator]
-public class ViewModelsGenerator : IIncrementalGenerator
+public class EntityViewsGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
@@ -56,15 +54,17 @@ public class ViewModelsGenerator : IIncrementalGenerator
                     .SelectMany(static v => v.Values)
                     .Select(static v => v.Value?.ToString() ?? string.Empty);
 
-                var baseType = attributeData.NamedArguments.First(x => x.Key == nameof(ViewModelAttribute.BaseType));
+                var baseType = attributeData.NamedArguments.First(x => x.Key == "BaseType");
                 var viewModelOf = (INamedTypeSymbol)baseType.Value.Value!;
 
-                ViewModelAnalysis.TargetTypes[classDeclaration.Identifier.Text] = viewModelOf;
+                var forms = attributeData.NamedArguments.FirstOrDefault(x => x.Key == nameof(ViewModelAttribute.Form));
+                var form = forms.Value.Value is null ? FormKind.None : (FormKind)forms.Value.Value;
 
                 return new ViewModelAnalysis(
                     classDeclaration,
                     viewModelOf,
-                    new HashSet<string>(getIgnoreExpression));
+                    new HashSet<string>(getIgnoreExpression),
+                    form);
             }
         }
 
@@ -77,13 +77,55 @@ public class ViewModelsGenerator : IIncrementalGenerator
     {
         if (classes.IsDefaultOrEmpty) return;
 
-        foreach (var @class in classes.Distinct())
+        foreach (var analysis in classes.Distinct())
         {
-            if (@class is null) continue;
+            if (analysis is null) continue;
+
+            var viewModelOfSymbol = analysis.FindViewModelOfSymbol(compilation) ??
+            throw new Exception($"Unable to find target type {analysis.ViewModelOf}.");
+
+            var ignorableByAttribute = viewModelOfSymbol.GetMembers()
+                .Where(m => m.Kind == SymbolKind.Property)
+                .Cast<IPropertySymbol>()
+                .Where(p => p.GetAttributes().Any(x => x.AttributeClass?.ToDisplayString() is
+                    "EntityViews.Attributes.IgnorePropertyAttribute" or "EntityViews.Attributes.IgnoreProperty"))
+                .Select(p => p.Name)
+                .ToImmutableHashSet();
+
+            var properties = viewModelOfSymbol.GetMembers()
+                .Where(m => m.Kind == SymbolKind.Property)
+                .Cast<IPropertySymbol>()
+                .Where(p =>
+                    !ignorableByAttribute.Contains(p.Name) &&
+                    !analysis.Ignore.Contains(p.Name));
+
+            var classDeclaration = analysis.ClassDeclaration;
 
             context.AddSource(
-                $"{@class.ClassDeclaration.Identifier}.g.cs",
-                ViewModelTemplate.Build(compilation, @class));
+                $"{classDeclaration.Identifier}.g.cs",
+                ViewModelTemplate.Build(compilation, classDeclaration, properties));
+
+            if (analysis.Form == FormKind.None) continue;
+
+            var rootNamespace =
+                compilation.Assembly.GlobalNamespace.GetNamespaceMembers().FirstOrDefault()?.Name
+                ?? string.Empty;
+
+            // add more kind of forms here?
+            if (analysis.Form == FormKind.MauiMarkup)
+            {
+                foreach (var property in properties)
+                {
+                    context.AddSource(
+                        $"{classDeclaration.Identifier}.{property.Name}.Input.g.cs",
+                        MauiFormTemplate.Build(
+                            compilation,
+                            classDeclaration.Identifier.ToString(),
+                            classDeclaration.GetNameSpace() ?? string.Empty,
+                            $"{rootNamespace}.EntityForms.{analysis.ViewModelOf.Name}",
+                            property));
+                }
+            }
         }
     }
 }

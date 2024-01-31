@@ -5,8 +5,6 @@ VisualStudioVersion = 17.8.34511.84
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityViews.SourceGenerators", "src\EntityViews.SourceGenerators\EntityViews.SourceGenerators.csproj", "{67B24982-BB74-4C89-92FA-67D7CEBCD2E7}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityViews.Attributes", "src\EntityViews.Attributes\EntityViews.Attributes.csproj", "{7278ED80-6994-42BE-AA8E-17398E863D0D}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{22CCF5E5-FCED-4188-877D-CB6C65203B85}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{F1C9D7CF-A8B0-45B6-85D4-E7D6B441D05E}"
@@ -16,7 +14,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "samples\Models\Models.csproj", "{5FDB9515-7A26-4C6F-9CD4-F3D98BAF1FD6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MauiApp1", "samples\MauiApp1\MauiApp1.csproj", "{77C0522B-B02B-49D4-9F10-D0F5C4553845}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiApp1", "samples\MauiApp1\MauiApp1.csproj", "{77C0522B-B02B-49D4-9F10-D0F5C4553845}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityViews.Attributes", "src\EntityViews.Attributes\EntityViews.Attributes.csproj", "{1531BD6A-5FD4-4DE3-970A-9814368BBAE0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,10 +28,6 @@ Global
 		{67B24982-BB74-4C89-92FA-67D7CEBCD2E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67B24982-BB74-4C89-92FA-67D7CEBCD2E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67B24982-BB74-4C89-92FA-67D7CEBCD2E7}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7278ED80-6994-42BE-AA8E-17398E863D0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7278ED80-6994-42BE-AA8E-17398E863D0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7278ED80-6994-42BE-AA8E-17398E863D0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7278ED80-6994-42BE-AA8E-17398E863D0D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{5FDB9515-7A26-4C6F-9CD4-F3D98BAF1FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5FDB9515-7A26-4C6F-9CD4-F3D98BAF1FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5FDB9515-7A26-4C6F-9CD4-F3D98BAF1FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -42,6 +38,10 @@ Global
 		{77C0522B-B02B-49D4-9F10-D0F5C4553845}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77C0522B-B02B-49D4-9F10-D0F5C4553845}.Release|Any CPU.Build.0 = Release|Any CPU
 		{77C0522B-B02B-49D4-9F10-D0F5C4553845}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1531BD6A-5FD4-4DE3-970A-9814368BBAE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1531BD6A-5FD4-4DE3-970A-9814368BBAE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1531BD6A-5FD4-4DE3-970A-9814368BBAE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1531BD6A-5FD4-4DE3-970A-9814368BBAE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

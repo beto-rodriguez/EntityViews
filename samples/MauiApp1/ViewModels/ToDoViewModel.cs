@@ -4,7 +4,7 @@ using Models;
 
 namespace MauiApp1.ViewModels;
 
-[ViewModel(BaseType = typeof(ToDoModel))]
+[ViewModel(BaseType = typeof(ToDoModel), Form = FormKind.MauiMarkup)]
 public partial class ToDoViewModel
 {
     [RelayCommand]
@@ -12,7 +12,8 @@ public partial class ToDoViewModel
     {
         if (!IsValid()) return;
 
-        // Save the ToDo here...
+        //Save the ToDo here...
         // Todo.Save();
     }
 }
+
