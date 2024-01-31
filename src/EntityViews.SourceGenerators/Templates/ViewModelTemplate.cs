@@ -21,7 +21,7 @@ public partial class {classDeclaration.Identifier} : INotifyPropertyChanged
 {{
     private readonly Dictionary<string, string> _validationErrors = [];
 
-    {properties.Aggregate(string.Empty, (currentString, property) => currentString + property.AsValidableProperty())}
+{properties.Aggregate(string.Empty, (currentString, property) => currentString + property.AsValidableProperty())}
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
