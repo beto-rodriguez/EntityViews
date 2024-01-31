@@ -117,10 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="NameField" xml:space="preserve">
-    <value>Nombre</value>
+  <data name="DescriptionField" xml:space="preserve">
+    <value>Descripción</value>
   </data>
-  <data name="NameRequired" xml:space="preserve">
-    <value>El campo nombre es obligatorio.</value>
+  <data name="DescriptionRequired" xml:space="preserve">
+    <value>La Descripción es obligatoria.</value>
   </data>
 </root>
