@@ -1,4 +1,7 @@
-﻿using CommunityToolkit.Mvvm.Input;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
+using CommunityToolkit.Mvvm.Input;
 using EntityViews.Attributes;
 using Models;
 
@@ -16,4 +19,3 @@ public partial class ToDoViewModel
         // Todo.Save();
     }
 }
-

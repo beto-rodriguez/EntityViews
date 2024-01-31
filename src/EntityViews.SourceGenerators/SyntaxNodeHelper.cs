@@ -7,12 +7,15 @@ namespace EntityViews.SourceGenerators;
 
 public static class SyntaxNodeHelper
 {
+    internal static readonly string s_displayAnnotation =
+        "System.ComponentModel.DataAnnotations." + nameof(DisplayAttribute);
+
     private static readonly HashSet<string> s_dataAnnotation =
     [
         "System.ComponentModel.DataAnnotations." + nameof(CreditCardAttribute),
         "System.ComponentModel.DataAnnotations." + nameof(CustomValidationAttribute),
         "System.ComponentModel.DataAnnotations." + nameof(DataTypeAttribute),
-        "System.ComponentModel.DataAnnotations." + nameof(DisplayAttribute),
+        //"System.ComponentModel.DataAnnotations." + nameof(DisplayAttribute), // <- ignore this one here
         "System.ComponentModel.DataAnnotations." + nameof(DisplayColumnAttribute),
         "System.ComponentModel.DataAnnotations." + nameof(DisplayFormatAttribute),
         "System.ComponentModel.DataAnnotations." + nameof(EditableAttribute),
