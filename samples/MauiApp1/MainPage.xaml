@@ -20,6 +20,7 @@
 
         <todoForm:NameInput />
         <todoForm:DescriptionInput />
+        <todoForm:ReminderInput />
         <todoForm:DoublePropInput/>
 
         <Button Text="Save" Command="{Binding SaveCommand}"/>

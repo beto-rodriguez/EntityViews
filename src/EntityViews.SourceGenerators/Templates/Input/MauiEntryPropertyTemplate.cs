@@ -45,7 +45,8 @@ public class {property.Name}Input : StackLayout
         input.TextChanged += async (_, _) =>
         {{
             if (await UserKeepsTyping()) return;
-            (({viewModelName})BindingContext).ValidateProperty(""{property.Name}"");
+            (({viewModelName})BindingContext).ValidateDirtyProperty(
+                ""{property.Name}"", input.Text is not null && input.Text.Length > 0);
         }};
 
         var validationLabel = new Label()

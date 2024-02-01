@@ -34,12 +34,7 @@ public class ToDoModel
     [MauiEditor]
     public string Description { get; set; } = string.Empty;
 
-    public int intProp { get; set; }
-    public short shortProp { get; set; }
-    public Int16 Int16Prop { get; set; }
-    public long LongProperty { get; set; }
     public double DoubleProp { get; set; }
-    public float FloatProp { get; set; }
 
     //public bool IsDone { get; set; }
 }

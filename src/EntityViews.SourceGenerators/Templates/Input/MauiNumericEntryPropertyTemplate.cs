@@ -48,7 +48,8 @@ public class {property.Name}Input : StackLayout
         _input.TextChanged += async (_, _) =>
         {{
             if (await UserKeepsTyping()) return;
-            (({viewModelName})BindingContext).ValidateProperty(""{property.Name}"");
+            (({viewModelName})BindingContext).ValidateDirtyProperty(
+                ""{property.Name}"", _input.Text is not null && _input.Text.Length > 0);
         }};
         BindingContextChanged += (_, _) => Subscribe();
         Subscribe();

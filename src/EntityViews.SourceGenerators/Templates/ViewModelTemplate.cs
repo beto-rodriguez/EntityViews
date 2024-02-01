@@ -22,6 +22,7 @@ public partial class {classDeclaration.Identifier} : INotifyPropertyChanged
     private readonly Dictionary<string, string> _validationErrors = [];
     private bool _isValid = true;
     private readonly Dictionary<string, Func<object?>> _propertyValue;
+    private readonly HashSet<string> _dirtyFields = new();
 
     public {classDeclaration.Identifier}()
     {{
@@ -33,6 +34,11 @@ public partial class {classDeclaration.Identifier} : INotifyPropertyChanged
     }}
 
 {properties.Aggregate(string.Empty, (currentString, property) => currentString + property.AsValidableProperty())}
+
+    /// <summary>
+    /// Gets a dictionary with the current validation errors.
+    /// </summary>
+    public Dictionary<string, string> ValidationErrors {{ get => _validationErrors; }}
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
@@ -62,6 +68,7 @@ public partial class {classDeclaration.Identifier} : INotifyPropertyChanged
                 AddValidationError(member, result.ErrorMessage ?? ""Unknown error."");
 
         Validating?.Invoke(this, new(null));
+        if (_isValid) _dirtyFields.Clear();
 
         return _isValid;
     }}
@@ -88,6 +95,21 @@ public partial class {classDeclaration.Identifier} : INotifyPropertyChanged
                 AddValidationError(member, result.ErrorMessage ?? ""Unknown error."");
 
         Validating?.Invoke(this, new(propertyName));
+    }}
+
+    /// <summary>
+    /// Validates a property only if the user has modified it.
+    /// </summary>
+    /// <param name=""propertyName"">The name of the property</param>
+    /// <param name=""isDirtyValue"">a value indicating whether the property is dirty on this call.</param>
+    public void ValidateDirtyProperty(string propertyName, bool isDirtyValue)
+    {{
+        var isDirty = _dirtyFields.Contains(propertyName) || isDirtyValue;
+        if (isDirty)
+        {{
+            ValidateProperty(propertyName);
+            _dirtyFields.Add(propertyName);
+        }}
     }}
 
     public void AddValidationError(string propertyName, string errorMessage)
