@@ -36,6 +36,17 @@ public class {property.Name}Input : StackLayout
                 Value = true,
                 Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = Colors.Red }} }},
             }});
+        async Task<bool> UserKeepsTyping()
+        {{
+            var txt = input.Text;
+            await Task.Delay(500);
+            return txt != input.Text;
+        }}
+        input.TextChanged += async (_, _) =>
+        {{
+            if (await UserKeepsTyping()) return;
+            (({viewModelName})BindingContext).ValidateProperty(""{property.Name}"");
+        }};
 
         var validationLabel = new Label()
             .Bind(

@@ -39,6 +39,17 @@ public class {property.Name}Input : StackLayout
                 Value = true,
                 Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = Colors.Red }} }},
             }});
+        async Task<bool> UserKeepsTyping()
+        {{
+            var txt = _input.Text;
+            await Task.Delay(500);
+            return txt != _input.Text;
+        }}
+        _input.TextChanged += async (_, _) =>
+        {{
+            if (await UserKeepsTyping()) return;
+            (({viewModelName})BindingContext).ValidateProperty(""{property.Name}"");
+        }};
         BindingContextChanged += (_, _) => Subscribe();
         Subscribe();
 
@@ -68,8 +79,9 @@ public class {property.Name}Input : StackLayout
         _subscribedTo = vm;
     }}
 
-    private void OnValidating({viewModelName} vm)
+    private void OnValidating({viewModelName} vm, EntityViews.Attributes.ValidatingEventArgs args)
     {{
+        if (args.PropertyName is not null && args.PropertyName != ""{property.Name}"") return;
         if (string.IsNullOrWhiteSpace(_input.Text)) return;
         if (!{property.Type.Name}.TryParse(_input.Text, out _))
             vm.AddValidationError(

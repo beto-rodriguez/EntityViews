@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using EntityViews.Attributes.Maui;
 using EntityViews.SourceGenerators.Templates.Input;
 using Microsoft.CodeAnalysis;
 

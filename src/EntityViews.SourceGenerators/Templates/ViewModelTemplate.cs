@@ -21,12 +21,22 @@ public partial class {classDeclaration.Identifier} : INotifyPropertyChanged
 {{
     private readonly Dictionary<string, string> _validationErrors = [];
     private bool _isValid = true;
+    private readonly Dictionary<string, Func<object?>> _propertyValue;
+
+    public {classDeclaration.Identifier}()
+    {{
+        _propertyValue = new()
+        {{
+{properties.Aggregate(string.Empty, (currentString, property) => currentString + @$"            {{ ""{property.Name}"", () => {property.Name} }},
+")}
+        }};
+    }}
 
 {properties.Aggregate(string.Empty, (currentString, property) => currentString + property.AsValidableProperty())}
 
     public event PropertyChangedEventHandler? PropertyChanged;
 
-    public event Action<{classDeclaration.Identifier}>? Validating;
+    public event Action<{classDeclaration.Identifier}, EntityViews.Attributes.ValidatingEventArgs>? Validating;
 
     /// <summary>
     /// Validates the view model and returns true if there are no validation errors.
@@ -51,9 +61,33 @@ public partial class {classDeclaration.Identifier} : INotifyPropertyChanged
             foreach (var member in result.MemberNames)
                 AddValidationError(member, result.ErrorMessage ?? ""Unknown error."");
 
-        Validating?.Invoke(this);
+        Validating?.Invoke(this, new(null));
 
         return _isValid;
+    }}
+
+    /// <summary>
+    /// Validates the specified property.
+    /// </summary>
+    /// <param name=""propertyName"">Name of the property.</param>
+    public void ValidateProperty(string propertyName)
+    {{
+        _ = _validationErrors.Remove(propertyName);
+        OnPropertyChanged($""{{propertyName}}Error"");
+        OnPropertyChanged($""{{propertyName}}HasError"");
+
+        var context = new ValidationContext(this) {{ MemberName = propertyName }};
+        var results = new List<ValidationResult>();
+
+        _ = Validator.TryValidateProperty(_propertyValue[propertyName](), context, results);
+
+        _isValid = true;
+
+        foreach (var result in results)
+            foreach (var member in result.MemberNames)
+                AddValidationError(member, result.ErrorMessage ?? ""Unknown error."");
+
+        Validating?.Invoke(this, new(propertyName));
     }}
 
     public void AddValidationError(string propertyName, string errorMessage)
