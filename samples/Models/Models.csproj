@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\EntityViews.Attributes\EntityViews.Attributes.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Resources\AppResources.Designer.cs">
       <DependentUpon>AppResources.resx</DependentUpon>
       <DesignTime>True</DesignTime>

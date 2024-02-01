@@ -2,7 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewModels="clr-namespace:MauiApp1.ViewModels"
-             xmlns:entityForms="clr-namespace:MauiApp1.EntityForms.ToDoModel"
+             xmlns:todoForm="clr-namespace:MauiApp1.EntityForms.ToDoModel"
              xmlns:resources="clr-namespace:Models.Resources;assembly=Models"
              x:Class="MauiApp1.MainPage">
 
@@ -18,8 +18,9 @@
 
     <StackLayout Orientation="Vertical">
 
-        <entityForms:NameInput />
-        <entityForms:DescriptionInput />
+        <todoForm:NameInput />
+        <todoForm:DescriptionInput />
+        <todoForm:DoublePropInput/>
 
         <Button Text="Save" Command="{Binding SaveCommand}"/>
     </StackLayout>

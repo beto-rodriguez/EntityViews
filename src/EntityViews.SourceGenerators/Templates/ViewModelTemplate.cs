@@ -20,10 +20,13 @@ namespace {classDeclaration.GetNameSpace()};
 public partial class {classDeclaration.Identifier} : INotifyPropertyChanged
 {{
     private readonly Dictionary<string, string> _validationErrors = [];
+    private bool _isValid = true;
 
 {properties.Aggregate(string.Empty, (currentString, property) => currentString + property.AsValidableProperty())}
 
     public event PropertyChangedEventHandler? PropertyChanged;
+
+    public event Action<{classDeclaration.Identifier}>? Validating;
 
     /// <summary>
     /// Validates the view model and returns true if there are no validation errors.
@@ -40,22 +43,28 @@ public partial class {classDeclaration.Identifier} : INotifyPropertyChanged
 
         var context = new ValidationContext(this);
         var results = new List<ValidationResult>();
-        var isValid = Validator.TryValidateObject(this, context, results, true);
+        _ = Validator.TryValidateObject(this, context, results, true);
+
+        _isValid = true;
 
         foreach (var result in results)
-        {{
             foreach (var member in result.MemberNames)
-            {{
-                // if there is already an error for this member, skip it
-                if (_validationErrors.ContainsKey(member)) continue;
+                AddValidationError(member, result.ErrorMessage ?? ""Unknown error."");
 
-                _validationErrors[member] = result.ErrorMessage ?? ""Unknown error."";
-                OnPropertyChanged($""{{member}}Error"");
-                OnPropertyChanged($""{{member}}HasError"");
-            }}
-        }}
+        Validating?.Invoke(this);
 
-        return isValid;
+        return _isValid;
+    }}
+
+    public void AddValidationError(string propertyName, string errorMessage)
+    {{
+        // if there is already an error for this member, skip it
+        if (_validationErrors.ContainsKey(propertyName)) return;
+
+        _validationErrors[propertyName] = errorMessage;
+        OnPropertyChanged($""{{propertyName}}Error"");
+        OnPropertyChanged($""{{propertyName}}HasError"");
+        _isValid = false;
     }}
 
     protected void SetProperty<T>(ref T field, T value, [CallerMemberName] string? propertyName = null)

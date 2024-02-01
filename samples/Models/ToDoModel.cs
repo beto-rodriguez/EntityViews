@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using EntityViews.Attributes.Maui;
 using Models.Resources;
 
 namespace Models;
@@ -29,5 +30,16 @@ public class ToDoModel
         ErrorMessageResourceType = typeof(AppResources))]
     [MinLength(10)]
     [MaxLength(200)]
+    // use an editor control instead of an entry (default for string)
+    [MauiEditor]
     public string Description { get; set; } = string.Empty;
+
+    public int intProp { get; set; }
+    public short shortProp { get; set; }
+    public Int16 Int16Prop { get; set; }
+    public long LongProperty { get; set; }
+    public double DoubleProp { get; set; }
+    public float FloatProp { get; set; }
+
+    //public bool IsDone { get; set; }
 }

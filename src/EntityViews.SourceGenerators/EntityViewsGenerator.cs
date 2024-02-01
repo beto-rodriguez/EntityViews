@@ -118,7 +118,7 @@ public class EntityViewsGenerator : IIncrementalGenerator
                 {
                     context.AddSource(
                         $"{classDeclaration.Identifier}.{property.Name}.Input.g.cs",
-                        MauiFormTemplate.Build(
+                        MauiFormPropertyTemplate.Build(
                             compilation,
                             classDeclaration.Identifier.ToString(),
                             classDeclaration.GetNameSpace() ?? string.Empty,
