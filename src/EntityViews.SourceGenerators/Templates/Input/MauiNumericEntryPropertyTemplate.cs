@@ -2,7 +2,7 @@
 
 public class MauiNumericEntryPropertyTemplate
 {
-    public static string Build(InputParams p)
+    public static string Build(InputTemplateParams p)
     {
         var property = p.Property;
         var viewModelName = p.ViewModelName;

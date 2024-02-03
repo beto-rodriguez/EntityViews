@@ -21,6 +21,7 @@ public class ToDoModel
     public string Reminder { get; set; } = string.Empty;
 
 
+    [MauiEditorInput] // <- use an Editor control instead of an entry (default for string)
     // use custom messages depending on the app language:
     [Display(
         Name = "DescriptionField",
@@ -30,11 +31,13 @@ public class ToDoModel
         ErrorMessageResourceType = typeof(AppResources))]
     [MinLength(10)]
     [MaxLength(200)]
-    // use an editor control instead of an entry (default for string)
-    [MauiEditor]
     public string Description { get; set; } = string.Empty;
 
+    // numeric properties use an Entry control
+    // but there is a special validation rule that parses the input text to the numeric type,
+    // if failed, the error message is shown
     public double DoubleProp { get; set; }
 
-    //public bool IsDone { get; set; }
+    [MauiCheckboxInput]
+    public bool IsDone { get; set; }
 }

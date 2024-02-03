@@ -1,6 +1,6 @@
 ﻿namespace EntityViews.SourceGenerators.Templates.Input;
 
-public class MauiEntryPropertyTemplate
+public class MauiEditorPropertyTemplate
 {
     public static string Build(InputTemplateParams p)
     {
@@ -24,13 +24,13 @@ public class {property.Name}Input : StackLayout
     {{
         var label = new Label().Text({propertyDisplaySource});
 
-        var input = new Entry()
+        var input = new Editor()
             .Bind(
-                Entry.TextProperty,
+                Editor.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
         input.Triggers.Add(
-            new DataTrigger(typeof(Entry))
+            new DataTrigger(typeof(Editor))
             {{
                 Binding = new Binding(""{property.Name}HasError""),
                 Value = true,

@@ -2,7 +2,7 @@
 
 namespace EntityViews.SourceGenerators.Templates;
 
-public struct InputParams(
+public struct InputTemplateParams(
     string viewModelName,
     string viewModelNamespace,
     string formNamespace,
