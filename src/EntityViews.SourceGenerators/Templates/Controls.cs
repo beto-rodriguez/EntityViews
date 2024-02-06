@@ -65,6 +65,54 @@ public static class Controls
             : $"{defaultRefName}.{SwitchInput.TargetProperty}";
     }
 
+    public static Control? DateInput;
+    public static string GetDateInputClassName()
+    {
+        return DateInput?.ClassName ?? "DatePicker";
+    }
+    public static string GetDateInputRef(string defaultRefName)
+    {
+        return DateInput?.TargetProperty is null
+            ? defaultRefName
+            : $"{defaultRefName}.{DateInput.TargetProperty}";
+    }
+
+    public static Control? TimeInput;
+    public static string GetTimeInputClassName()
+    {
+        return DateInput?.ClassName ?? "TimePicker";
+    }
+    public static string GetTimeInputRef(string defaultRefName)
+    {
+        return TimeInput?.TargetProperty is null
+            ? defaultRefName
+            : $"{defaultRefName}.{TimeInput.TargetProperty}";
+    }
+
+    public static Control? SliderInput;
+    public static string GetSliderInputClassName()
+    {
+        return SliderInput?.ClassName ?? "Slider";
+    }
+    public static string GetSliderInputRef(string defaultRefName)
+    {
+        return SliderInput?.TargetProperty is null
+            ? defaultRefName
+            : $"{defaultRefName}.{SliderInput.TargetProperty}";
+    }
+
+    public static Control? StepperInput;
+    public static string GetStepperInputClassName()
+    {
+        return StepperInput?.ClassName ?? "Stepper";
+    }
+    public static string GetStepperInputRef(string defaultRefName)
+    {
+        return StepperInput?.TargetProperty is null
+            ? defaultRefName
+            : $"{defaultRefName}.{StepperInput.TargetProperty}";
+    }
+
     public static Control? Validation;
     public static string GetValidationClassName()
     {
@@ -81,7 +129,7 @@ public static class Controls
         // only when the validation was not defined by the user
         // we set the text color to the error color
         return Validation is null
-            ? $"\r\n{GetValidationRef(defaultRefName)}.TextColor = {OnErrorTextColor};"
+            ? $"\r\n        {GetValidationRef(defaultRefName)}.TextColor = {OnErrorTextColor};"
             : string.Empty;
     }
 

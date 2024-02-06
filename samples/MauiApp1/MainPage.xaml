@@ -22,6 +22,10 @@
         <todoForm:DescriptionInput />
         <todoForm:ReminderInput />
         <todoForm:DoublePropInput/>
+        <todoForm:DateInput/>
+        <todoForm:TimeInput/>
+        <todoForm:SliderInput/>
+        <todoForm:StepperInput/>
 
         <Button Text="Save" Command="{Binding SaveCommand}"/>
     </StackLayout>

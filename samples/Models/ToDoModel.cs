@@ -38,6 +38,15 @@ public class ToDoModel
     // if failed, the error message is shown
     public double DoubleProp { get; set; }
 
-    [MauiCheckboxInput]
+    public DateTime Date { get; set; }
+    public TimeSpan Time { get; set; }
+
+    [MauiSwitchInput]
     public bool IsDone { get; set; }
+
+    [MauiSliderInput]
+    public double Slider { get; set; }
+
+    [MauiStepperInput]
+    public double Stepper { get; set; }
 }
