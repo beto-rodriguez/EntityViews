@@ -25,19 +25,21 @@ public class {property.Name}Input : StackLayout
 
     public {property.Name}Input()
     {{
-        var label = new Label().Text({propertyDisplaySource});
+        var label = new {Controls.GetDisplayClassName()}();
+        {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
 
-        _input = new Entry()
-            .Bind(
-                Entry.TextProperty,
-                getter: static ({viewModelName} vm) => vm.{property.Name},
-                setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
+        var inputControl = new {Controls.GetTextInputClassName()}();
+        _input = {Controls.GetTextInputRef("inputControl")};
+        _input.Bind(
+            Entry.TextProperty,
+            getter: static ({viewModelName} vm) => vm.{property.Name},
+            setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
         _input.Triggers.Add(
             new DataTrigger(typeof(Entry))
             {{
                 Binding = new Binding(""{property.Name}HasError""),
                 Value = true,
-                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = Colors.Red }} }},
+                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {Controls.OnErrorBackgroundColor} }} }},
             }});
         async Task<bool> UserKeepsTyping()
         {{
@@ -51,10 +53,14 @@ public class {property.Name}Input : StackLayout
             (({viewModelName})BindingContext).ValidateDirtyProperty(
                 ""{property.Name}"", _input.Text is not null && _input.Text.Length > 0);
         }};
+
+        // numeric fields, subscribe to the Validating event, then it tries to parse the input
+        // if it fails, it adds a validation error
         BindingContextChanged += (_, _) => Subscribe();
         Subscribe();
 
-        var validationLabel = new Label()
+        var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
+        {Controls.GetValidationRef("validationLabel")}
             .Bind(
                 Label.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name}Error);

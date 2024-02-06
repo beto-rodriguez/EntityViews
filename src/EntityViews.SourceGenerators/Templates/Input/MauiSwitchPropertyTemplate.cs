@@ -22,15 +22,18 @@ public class {property.Name}Input : StackLayout
 {{
     public {property.Name}Input()
     {{
-        var label = new Label().Text({propertyDisplaySource});
+        var label = new {Controls.GetDisplayClassName()}();
+        {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
 
-        var input = new Switch()
+        var input = new {Controls.GetSwitchInputClassName()}();
+        {Controls.GetSwitchInputRef("input")}
             .Bind(
                 Switch.IsToggledProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
 
-        var validationLabel = new Label()
+        var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
+        {Controls.GetValidationRef("validationLabel")}
             .Bind(
                 Label.TextProperty,
                 getter: static (ToDoViewModel vm) => vm.IsDone);

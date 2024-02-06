@@ -22,34 +22,37 @@ public class {property.Name}Input : StackLayout
 {{
     public {property.Name}Input()
     {{
-        var label = new Label().Text({propertyDisplaySource});
+        var label = new {Controls.GetDisplayClassName()}();
+        {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
 
-        var input = new Editor()
+        var input = new {Controls.GetTextAreaInputClassName()}();
+        {Controls.GetTextAreaInputRef("input")}
             .Bind(
                 Editor.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-        input.Triggers.Add(
+        {Controls.GetTextAreaInputRef("input")}.Triggers.Add(
             new DataTrigger(typeof(Editor))
             {{
                 Binding = new Binding(""{property.Name}HasError""),
                 Value = true,
-                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = Colors.Red }} }},
+                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {Controls.OnErrorBackgroundColor} }} }},
             }});
         async Task<bool> UserKeepsTyping()
         {{
-            var txt = input.Text;
+            var txt = {Controls.GetTextAreaInputRef("input")}.Text;
             await Task.Delay(500);
-            return txt != input.Text;
+            return txt != {Controls.GetTextAreaInputRef("input")}.Text;
         }}
-        input.TextChanged += async (_, _) =>
+        {Controls.GetTextAreaInputRef("input")}.TextChanged += async (_, _) =>
         {{
             if (await UserKeepsTyping()) return;
             (({viewModelName})BindingContext).ValidateDirtyProperty(
-                ""{property.Name}"", input.Text is not null && input.Text.Length > 0);
+                ""{property.Name}"", {Controls.GetTextAreaInputRef("input")}.Text is not null && {Controls.GetTextAreaInputRef("input")}.Text.Length > 0);
         }};
 
-        var validationLabel = new Label()
+        var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")};
+        {Controls.GetValidationRef("validationLabel")}
             .Bind(
                 Label.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name}Error);

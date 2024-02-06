@@ -36,7 +36,7 @@ public class {property.Name}Input : StackLayout
             {{
                 Binding = new Binding(""{property.Name}HasError""),
                 Value = true,
-                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = Colors.Red }} }},
+                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {Controls.OnErrorBackgroundColor} }} }},
             }});
         async Task<bool> UserKeepsTyping()
         {{
@@ -51,7 +51,7 @@ public class {property.Name}Input : StackLayout
                 ""{property.Name}"", {Controls.GetTextInputRef("input")}.Text is not null && {Controls.GetTextInputRef("input")}.Text.Length > 0);
         }};
 
-        var validationLabel = new {Controls.GetValidationClassName()}();
+        var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
         {Controls.GetValidationRef("validationLabel")}
             .Bind(
                 Label.TextProperty,

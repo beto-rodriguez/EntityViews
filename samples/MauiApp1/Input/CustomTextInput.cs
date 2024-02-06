@@ -7,8 +7,6 @@ public class CustomTextInput : Border
 {
     public CustomTextInput()
     {
-        BackgroundColor = Colors.Gray;
-        Padding = new Thickness(5);
         Content = TextInput = new Entry
         {
             TextColor = Colors.Black
