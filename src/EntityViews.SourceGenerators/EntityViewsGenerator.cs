@@ -13,6 +13,8 @@ public class EntityViewsGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        Controls.Clear();
+
         var classDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
                 predicate: IsSyntaxTargetForGeneration,
@@ -42,9 +44,31 @@ public class EntityViewsGenerator : IIncrementalGenerator
         {
             if (attributeData.AttributeClass is null) continue;
 
-            var nameParts = attributeData.AttributeClass.ToDisplayParts();
-            if (nameParts.Length < 5) continue;
-            var attributeName = $"{nameParts[0]}.{nameParts[2]}.{nameParts[4]}";
+            var attributeName = attributeData.AttributeClass.ToDisplayString();
+
+            if (attributeName == "EntityViews.Attributes.Input.DisplayControlAttribute")
+            {
+                Controls.Display = new Controls.Control(
+                    $"{classSymbol.ContainingNamespace.ToDisplayString()}.{classSymbol.Name}",
+                    classSymbol.GetControlProperty());
+                continue;
+            }
+
+            if (attributeName == "EntityViews.Attributes.Input.TextControlAttribute")
+            {
+                Controls.TextInput = new Controls.Control(
+                    $"{classSymbol.ContainingNamespace.ToDisplayString()}.{classSymbol.Name}",
+                    classSymbol.GetControlProperty());
+                continue;
+            }
+
+            if (attributeName == "EntityViews.Attributes.Input.ValidationControlAttribute")
+            {
+                Controls.Validation = new Controls.Control(
+                    $"{classSymbol.ContainingNamespace.ToDisplayString()}.{classSymbol.Name}",
+                    classSymbol.GetControlProperty());
+                continue;
+            }
 
             if (attributeName == "EntityViews.Attributes.ViewModelAttribute")
             {

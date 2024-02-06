@@ -90,6 +90,19 @@ public static class SyntaxNodeHelper
         return null;
     }
 
+    public static string? GetControlProperty(this INamedTypeSymbol symbol)
+    {
+        const string control = "EntityViews.Attributes.Input.ControlPropertyAttribute";
+
+        return symbol.GetMembers()
+            .Where(m => m.Kind == SymbolKind.Property)
+            .Cast<IPropertySymbol>()
+            .FirstOrDefault(p =>
+                p.GetAttributes()
+                    .Any(x => x.AttributeClass?.ToDisplayString() == control))?
+            .Name;
+    }
+
     public static string AsValidableProperty(this IPropertySymbol property)
     {
         var annotations = property

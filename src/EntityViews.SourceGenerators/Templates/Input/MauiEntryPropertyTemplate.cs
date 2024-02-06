@@ -22,14 +22,16 @@ public class {property.Name}Input : StackLayout
 {{
     public {property.Name}Input()
     {{
-        var label = new Label().Text({propertyDisplaySource});
+        var label = new {Controls.GetDisplayClassName()}();
+        {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
 
-        var input = new Entry()
+        var input = new {Controls.GetTextInputClassName()}();
+        {Controls.GetTextInputRef("input")}
             .Bind(
                 Entry.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-        input.Triggers.Add(
+        {Controls.GetTextInputRef("input")}.Triggers.Add(
             new DataTrigger(typeof(Entry))
             {{
                 Binding = new Binding(""{property.Name}HasError""),
@@ -38,18 +40,19 @@ public class {property.Name}Input : StackLayout
             }});
         async Task<bool> UserKeepsTyping()
         {{
-            var txt = input.Text;
+            var txt = {Controls.GetTextInputRef("input")}.Text;
             await Task.Delay(500);
-            return txt != input.Text;
+            return txt != {Controls.GetTextInputRef("input")}.Text;
         }}
-        input.TextChanged += async (_, _) =>
+        {Controls.GetTextInputRef("input")}.TextChanged += async (_, _) =>
         {{
             if (await UserKeepsTyping()) return;
             (({viewModelName})BindingContext).ValidateDirtyProperty(
-                ""{property.Name}"", input.Text is not null && input.Text.Length > 0);
+                ""{property.Name}"", {Controls.GetTextInputRef("input")}.Text is not null && {Controls.GetTextInputRef("input")}.Text.Length > 0);
         }};
 
-        var validationLabel = new Label()
+        var validationLabel = new {Controls.GetValidationClassName()}();
+        {Controls.GetValidationRef("validationLabel")}
             .Bind(
                 Label.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name}Error);
