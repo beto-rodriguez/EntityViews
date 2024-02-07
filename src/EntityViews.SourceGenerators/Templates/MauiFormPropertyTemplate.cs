@@ -14,39 +14,6 @@ public class MauiFormPropertyTemplate
         IPropertySymbol property,
         Dictionary<string, string> inputs)
     {
-        var attributes = property.GetAttributes();
-
-        var displayAttribute = attributes
-            .FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == SyntaxNodeHelper.s_displayAnnotation);
-
-        string propertyDisplaySource;
-
-        if (displayAttribute is null)
-        {
-            // if the display attribute is not present, we use the property name.
-            propertyDisplaySource = @$"""{property.Name}""";
-        }
-        else
-        {
-            var name = displayAttribute.NamedArguments
-                .FirstOrDefault(x => x.Key == nameof(DisplayAttribute.Name)).Value.Value;
-
-            var resourceType = displayAttribute.NamedArguments
-                .FirstOrDefault(x => x.Key == nameof(DisplayAttribute.ResourceType)).Value.Value;
-
-            if (resourceType is null)
-            {
-                // if the ResourceType is null, we use a string literal.
-                propertyDisplaySource = @$"""{(name is null ? null : (string)name) ?? property.Name}""";
-            }
-            else
-            {
-                // otherwise, we get it from the resource manager.
-                var namedTypeSymbol = (INamedTypeSymbol)resourceType;
-                propertyDisplaySource = @$"{namedTypeSymbol.ToDisplayString()}.ResourceManager.GetString(""{name}"")";
-            }
-        }
-
         _ = s_default_typeInput.TryGetValue(property.Type.Name.ToLower(), out var defaultInputKey);
 
         if (inputs.TryGetValue(property.Name, out var inputType) && inputType != InputTypes.Default)
@@ -64,7 +31,7 @@ public class MauiFormPropertyTemplate
         }
 
         var templateParams = new InputTemplateParams(
-            viewModelName, viewModelNamespace, formNamespace, propertyDisplaySource, property);
+            viewModelName, viewModelNamespace, formNamespace, property.GetPropertyDisplaySource(), property);
 
         return inputTemplate(templateParams);
     }

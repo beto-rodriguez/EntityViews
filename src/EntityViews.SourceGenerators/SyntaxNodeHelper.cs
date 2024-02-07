@@ -104,6 +104,43 @@ public static class SyntaxNodeHelper
             .Name;
     }
 
+    public static string GetPropertyDisplaySource(this IPropertySymbol property)
+    {
+        string propertyDisplaySource;
+
+        var displayAttribute = property
+            .GetAttributes()
+            .FirstOrDefault(x => x.AttributeClass?.ToDisplayString() == s_displayAnnotation);
+
+        if (displayAttribute is null)
+        {
+            // if the display attribute is not present, we use the property name.
+            propertyDisplaySource = @$"""{property.Name}""";
+        }
+        else
+        {
+            var name = displayAttribute.NamedArguments
+                .FirstOrDefault(x => x.Key == nameof(DisplayAttribute.Name)).Value.Value;
+
+            var resourceType = displayAttribute.NamedArguments
+                .FirstOrDefault(x => x.Key == nameof(DisplayAttribute.ResourceType)).Value.Value;
+
+            if (resourceType is null)
+            {
+                // if the ResourceType is null, we use a string literal.
+                propertyDisplaySource = @$"""{(name is null ? null : (string)name) ?? property.Name}""";
+            }
+            else
+            {
+                // otherwise, we get it from the resource manager.
+                var namedTypeSymbol = (INamedTypeSymbol)resourceType;
+                propertyDisplaySource = @$"{namedTypeSymbol.ToDisplayString()}.ResourceManager.GetString(""{name}"")";
+            }
+        }
+
+        return propertyDisplaySource;
+    }
+
     public static string AsValidableProperty(this IPropertySymbol property)
     {
         var annotations = property
