@@ -1,6 +1,5 @@
 ﻿using System.Collections.Immutable;
 using EntityViews.SourceGenerators.Templates;
-using EntityViews.SourceGenerators.Templates.Maui;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -16,7 +15,6 @@ public class EntityViewsGenerator : IIncrementalGenerator
         context.RegisterPostInitializationOutput(i =>
         {
             i.AddSource("EntityViews.Attributes.Input.g.cs", AttributesTemplate.Build());
-            i.AddSource("EntityViews.Attributes.Maui.g.cs", AttributesMauiTemplate.Build());
         });
 
         Controls.Clear();
@@ -46,7 +44,9 @@ public class EntityViewsGenerator : IIncrementalGenerator
 
         if (classSymbol is null) return null;
 
-        foreach (var attributeData in classSymbol.GetAttributes())
+        var classAttributes = classSymbol.GetAttributes();
+
+        foreach (var attributeData in classAttributes)
         {
             if (attributeData.AttributeClass is null) continue;
 
@@ -90,11 +90,33 @@ public class EntityViewsGenerator : IIncrementalGenerator
                 var forms = attributeData.NamedArguments.FirstOrDefault(x => x.Key == "Form");
                 var form = forms.Value.Value is null ? 0 : (int)forms.Value.Value;
 
+                var inputs = classAttributes
+                    .Where(static x => x.AttributeClass?.ToDisplayString() == "EntityViews.Attributes.FormInput")
+                    .Select(static x =>
+                    {
+                        string? propertyName = null;
+                        string? inputType = null;
+
+                        foreach (var arg in x.NamedArguments)
+                        {
+                            if (arg.Key == "PropertyName") propertyName = arg.Value.Value?.ToString();
+                            if (arg.Key == "InputType") inputType = arg.Value.Value?.ToString();
+                            if (propertyName is not null && inputType is not null) break;
+                        }
+
+                        return new Tuple<string, string>(propertyName ?? string.Empty, inputType ?? InputTypes.Default);
+                    });
+
+                var inputsDictionary = new Dictionary<string, string>();
+                foreach (var item in inputs)
+                    inputsDictionary[item.Item1] = item.Item2; // override duplicates.
+
                 return new ViewModelAnalysis(
                     classDeclaration,
                     viewModelOf,
                     new HashSet<string>(getIgnoreExpression),
-                    form);
+                    form,
+                    inputsDictionary);
             }
         }
 
@@ -153,7 +175,8 @@ public class EntityViewsGenerator : IIncrementalGenerator
                             classDeclaration.Identifier.ToString(),
                             classDeclaration.GetNameSpace() ?? string.Empty,
                             $"{rootNamespace}.EntityForms.{analysis.ViewModelOf.Name}",
-                            property));
+                            property,
+                            analysis.Inputs));
                 }
             }
         }

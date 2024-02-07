@@ -35,12 +35,14 @@ public static class SyntaxNodeHelper
         ClassDeclarationSyntax classDeclaration,
         ITypeSymbol viewModelOf,
         HashSet<string> ignore,
-        int form)
+        int form,
+        Dictionary<string, string> inputs)
     {
         public ClassDeclarationSyntax ClassDeclaration { get; } = classDeclaration;
         public ITypeSymbol ViewModelOf { get; } = viewModelOf;
         public HashSet<string> Ignore { get; } = ignore;
         public int Form { get; } = form;
+        public Dictionary<string, string> Inputs { get; } = inputs;
     }
 
     public static ITypeSymbol? FindViewModelOfSymbol(this ViewModelAnalysis analysis, Compilation compilation)

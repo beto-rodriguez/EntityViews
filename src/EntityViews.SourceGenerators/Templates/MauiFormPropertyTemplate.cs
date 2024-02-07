@@ -11,7 +11,8 @@ public class MauiFormPropertyTemplate
         string viewModelName,
         string viewModelNamespace,
         string formNamespace,
-        IPropertySymbol property)
+        IPropertySymbol property,
+        Dictionary<string, string> inputs)
     {
         var attributes = property.GetAttributes();
 
@@ -48,11 +49,8 @@ public class MauiFormPropertyTemplate
 
         _ = s_default_typeInput.TryGetValue(property.Type.Name.ToLower(), out var defaultInputKey);
 
-        //var mauiAttribute = attributes
-        //    .FirstOrDefault(x => s_maui_attributes.ContainsKey(x.AttributeClass?.ToDisplayString() ?? "?"));
-
-        //if (mauiAttribute is not null)
-        //    defaultInputKey = s_maui_attributes[mauiAttribute.AttributeClass!.ToDisplayString()];
+        if (inputs.TryGetValue(property.Name, out var inputType) && inputType != InputTypes.Default)
+            defaultInputKey = inputType;
 
         if (!s_inputs.TryGetValue(defaultInputKey, out var inputTemplate))
         {

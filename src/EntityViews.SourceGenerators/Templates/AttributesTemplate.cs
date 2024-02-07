@@ -33,12 +33,12 @@ public class ViewModelAttribute() : Attribute
 /// <summary>
 /// Defines the input type to use for the specified property.
 /// </summary>
-public class FormProperty() : Attribute
+public class FormInput() : Attribute
 {
     /// <summary>
     /// Gets or sets the name of the property.
     /// </summary>
-    public string Name { get; set; } = string.Empty;
+    public string PropertyName { get; set; } = string.Empty;
 
     /// <summary>
     /// Gets or sets the input type to use.
@@ -123,6 +123,10 @@ public static class FormKind
 /// </summary>
 public static class InputTypes
 {
+    /// <summary>
+    /// The default input type based on the property type.
+    /// </summary>
+    public const string Default = ""default"";
     public const string Text = ""text"";
     public const string TextArea = ""text-area"";
     public const string Number = ""number"";
