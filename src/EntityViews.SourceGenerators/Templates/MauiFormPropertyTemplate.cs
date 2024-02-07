@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using EntityViews.SourceGenerators.Templates.Maui;
+﻿using EntityViews.SourceGenerators.Templates.Maui;
 using Microsoft.CodeAnalysis;
 
 namespace EntityViews.SourceGenerators.Templates;
@@ -27,7 +26,7 @@ public class MauiFormPropertyTemplate
 // Key:         {defaultInputKey}
 // Property:    {property.Name}
 // Type:        {property.Type.Name}
-// Attribute:   {"null"}";
+";
         }
 
         var templateParams = new InputTemplateParams(
