@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using EntityViews.SourceGenerators.Templates.Input;
+using EntityViews.SourceGenerators.Templates.Maui;
 using Microsoft.CodeAnalysis;
 
 namespace EntityViews.SourceGenerators.Templates;
@@ -48,11 +48,11 @@ public class MauiFormPropertyTemplate
 
         _ = s_default_typeInput.TryGetValue(property.Type.Name.ToLower(), out var defaultInputKey);
 
-        var mauiAttribute = attributes
-            .FirstOrDefault(x => s_maui_attributes.ContainsKey(x.AttributeClass?.ToDisplayString() ?? "?"));
+        //var mauiAttribute = attributes
+        //    .FirstOrDefault(x => s_maui_attributes.ContainsKey(x.AttributeClass?.ToDisplayString() ?? "?"));
 
-        if (mauiAttribute is not null)
-            defaultInputKey = s_maui_attributes[mauiAttribute.AttributeClass!.ToDisplayString()];
+        //if (mauiAttribute is not null)
+        //    defaultInputKey = s_maui_attributes[mauiAttribute.AttributeClass!.ToDisplayString()];
 
         if (!s_inputs.TryGetValue(defaultInputKey, out var inputTemplate))
         {
@@ -62,7 +62,7 @@ public class MauiFormPropertyTemplate
 // Key:         {defaultInputKey}
 // Property:    {property.Name}
 // Type:        {property.Type.Name}
-// Attribute:   {mauiAttribute?.AttributeClass?.ToDisplayString() ?? "null"}";
+// Attribute:   {"null"}";
         }
 
         var templateParams = new InputTemplateParams(
@@ -73,15 +73,15 @@ public class MauiFormPropertyTemplate
 
     private static readonly Dictionary<string, Func<InputTemplateParams, string>> s_inputs = new()
     {
-        ["text"] = MauiEntryPropertyTemplate.Build,
-        ["editor"] = MauiEditorPropertyTemplate.Build,
-        ["number"] = MauiNumericEntryPropertyTemplate.Build,
-        ["switch"] = MauiSwitchPropertyTemplate.Build,
-        ["checkbox"] = MauiCheckboxPropertyTemplate.Build,
-        ["datetime"] = MauiDatePickerPropertyTemplate.Build,
-        ["timespan"] = MauiTimePickerPropertyTemplate.Build,
-        ["slider"] = MauiSliderPropertyTemplate.Build,
-        ["stepper"] = MauiStepperPropertyTemplate.Build
+        [InputTypes.Text] = MauiEntryPropertyTemplate.Build,
+        [InputTypes.TextArea] = MauiEditorPropertyTemplate.Build,
+        [InputTypes.Number] = MauiNumericEntryPropertyTemplate.Build,
+        [InputTypes.Switch] = MauiSwitchPropertyTemplate.Build,
+        [InputTypes.Checkbox] = MauiCheckboxPropertyTemplate.Build,
+        [InputTypes.DateTime] = MauiDatePickerPropertyTemplate.Build,
+        [InputTypes.TimeSpan] = MauiTimePickerPropertyTemplate.Build,
+        [InputTypes.Slider] = MauiSliderPropertyTemplate.Build,
+        [InputTypes.Stepper] = MauiStepperPropertyTemplate.Build
     };
 
     private static readonly Dictionary<string, string> s_default_typeInput = new()
@@ -100,13 +100,5 @@ public class MauiFormPropertyTemplate
         ["boolean"] = "checkbox",
         ["datetime"] = "datetime",
         ["timespan"] = "timespan",
-    };
-
-    private static readonly Dictionary<string, string> s_maui_attributes = new()
-    {
-        ["EntityViews.Attributes.Maui.MauiEditorInputAttribute"] = "editor",
-        ["EntityViews.Attributes.Maui.MauiSwitchInputAttribute"] = "switch",
-        ["EntityViews.Attributes.Maui.MauiStepperInputAttribute"] = "stepper",
-        ["EntityViews.Attributes.Maui.MauiSliderInputAttribute"] = "slider"
     };
 }

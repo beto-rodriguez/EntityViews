@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using EntityViews.Attributes.Maui;
 using Models.Resources;
 
 namespace Models;
@@ -21,7 +20,7 @@ public class ToDoModel
     public string Reminder { get; set; } = string.Empty;
 
 
-    [MauiEditorInput] // <- use an Editor control instead of an entry (default for string)
+    //[MauiEditorInput] // <- use an Editor control instead of an entry (default for string)
     // use custom messages depending on the app language:
     [Display(
         Name = "DescriptionField",
@@ -45,12 +44,12 @@ public class ToDoModel
     [CreditCard]
     public string CreditCard { get; set; } = string.Empty;
 
-    [MauiSwitchInput]
+    //[MauiSwitchInput]
     public bool IsDone { get; set; }
 
-    [MauiSliderInput]
+    //[MauiSliderInput]
     public double Slider { get; set; }
 
-    [MauiStepperInput]
+    //[MauiStepperInput]
     public double Stepper { get; set; }
 }

@@ -1,4 +1,4 @@
-﻿using EntityViews.Attributes.Input;
+﻿using EntityViews.Attributes;
 
 namespace MauiApp1.Input;
 

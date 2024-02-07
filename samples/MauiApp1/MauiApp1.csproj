@@ -67,7 +67,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\EntityViews.Attributes\EntityViews.Attributes.csproj" />
     <ProjectReference Include="..\..\src\EntityViews.SourceGenerators\EntityViews.SourceGenerators.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
   </ItemGroup>
 

@@ -1,6 +1,6 @@
-﻿namespace EntityViews.SourceGenerators.Templates.Input;
+﻿namespace EntityViews.SourceGenerators.Templates.Maui;
 
-public class MauiSliderPropertyTemplate
+public class MauiDatePickerPropertyTemplate
 {
     public static string Build(InputTemplateParams p)
     {
@@ -25,12 +25,19 @@ public class {property.Name}Input : StackLayout
         var label = new {Controls.GetDisplayClassName()}();
         {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
 
-        var input = new {Controls.GetSliderInputClassName()}();
-        {Controls.GetSliderInputRef("input")}
+        var input = new {Controls.GetDateInputClassName()}();
+        {Controls.GetDateInputRef("input")}
             .Bind(
-                Slider.ValueProperty,
+                DatePicker.DateProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
+        {Controls.GetDateInputRef("input")}.Triggers.Add(
+            new DataTrigger(typeof(DatePicker))
+            {{
+                Binding = new Binding(""{property.Name}HasError""),
+                Value = true,
+                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {Controls.OnErrorBackgroundColor} }} }},
+            }});
         Input = {Controls.GetDateInputRef("input")};
 
         var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
@@ -44,7 +51,7 @@ public class {property.Name}Input : StackLayout
         Children.Add(validationLabel);
     }}
 
-    public Slider Input {{ get; }}
+    public DatePicker Input {{ get; }}
 }}
 ";
     }

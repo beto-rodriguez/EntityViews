@@ -1,6 +1,6 @@
-﻿namespace EntityViews.SourceGenerators.Templates.Input;
+﻿namespace EntityViews.SourceGenerators.Templates.Maui;
 
-public class MauiStepperPropertyTemplate
+public class MauiCheckboxPropertyTemplate
 {
     public static string Build(InputTemplateParams p)
     {
@@ -25,26 +25,26 @@ public class {property.Name}Input : StackLayout
         var label = new {Controls.GetDisplayClassName()}();
         {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
 
-        var input = new {Controls.GetStepperInputClassName()}();
-        {Controls.GetStepperInputRef("input")}
+        var input = new {Controls.GetCheckboxInputClassName()}();
+        input
             .Bind(
-                Stepper.ValueProperty,
+                CheckBox.IsCheckedProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
-                setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-        Input = {Controls.GetDateInputRef("input")};
+                setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
+        Input = input;
 
         var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
         {Controls.GetValidationRef("validationLabel")}
             .Bind(
                 Label.TextProperty,
-                getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+                getter: static (ToDoViewModel vm) => vm.IsDone);
 
         Children.Add(label);
         Children.Add(input);
         Children.Add(validationLabel);
     }}
 
-    public Stepper Input {{ get; }}
+    public CheckBox Input {{ get; }}
 }}
 ";
     }

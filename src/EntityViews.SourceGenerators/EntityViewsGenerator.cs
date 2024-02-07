@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
-using EntityViews.Attributes;
 using EntityViews.SourceGenerators.Templates;
+using EntityViews.SourceGenerators.Templates.Maui;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -13,6 +13,12 @@ public class EntityViewsGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        context.RegisterPostInitializationOutput(i =>
+        {
+            i.AddSource("EntityViews.Attributes.Input.g.cs", AttributesTemplate.Build());
+            i.AddSource("EntityViews.Attributes.Maui.g.cs", AttributesMauiTemplate.Build());
+        });
+
         Controls.Clear();
 
         var classDeclarations = context.SyntaxProvider
@@ -81,8 +87,8 @@ public class EntityViewsGenerator : IIncrementalGenerator
                 var baseType = attributeData.NamedArguments.First(x => x.Key == "BaseType");
                 var viewModelOf = (INamedTypeSymbol)baseType.Value.Value!;
 
-                var forms = attributeData.NamedArguments.FirstOrDefault(x => x.Key == nameof(ViewModelAttribute.Form));
-                var form = forms.Value.Value is null ? FormKind.None : (FormKind)forms.Value.Value;
+                var forms = attributeData.NamedArguments.FirstOrDefault(x => x.Key == "Form");
+                var form = forms.Value.Value is null ? 0 : (int)forms.Value.Value;
 
                 return new ViewModelAnalysis(
                     classDeclaration,
@@ -129,14 +135,14 @@ public class EntityViewsGenerator : IIncrementalGenerator
                 $"{classDeclaration.Identifier}.g.cs",
                 ViewModelTemplate.Build(compilation, classDeclaration, properties));
 
-            if (analysis.Form == FormKind.None) continue;
+            if (analysis.Form == 0) continue;
 
             var rootNamespace =
                 compilation.Assembly.GlobalNamespace.GetNamespaceMembers().FirstOrDefault()?.Name
                 ?? string.Empty;
 
             // add more kind of forms here?
-            if (analysis.Form == FormKind.MauiMarkup)
+            if (analysis.Form == 1)
             {
                 foreach (var property in properties)
                 {

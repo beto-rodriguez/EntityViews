@@ -1,5 +1,4 @@
-﻿using EntityViews.Attributes;
-using Microsoft.CodeAnalysis;
+﻿using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System.ComponentModel.DataAnnotations;
 
@@ -36,12 +35,12 @@ public static class SyntaxNodeHelper
         ClassDeclarationSyntax classDeclaration,
         ITypeSymbol viewModelOf,
         HashSet<string> ignore,
-        FormKind form)
+        int form)
     {
         public ClassDeclarationSyntax ClassDeclaration { get; } = classDeclaration;
         public ITypeSymbol ViewModelOf { get; } = viewModelOf;
         public HashSet<string> Ignore { get; } = ignore;
-        public FormKind Form { get; } = form;
+        public int Form { get; } = form;
     }
 
     public static ITypeSymbol? FindViewModelOfSymbol(this ViewModelAnalysis analysis, Compilation compilation)

@@ -144,5 +144,12 @@ public static class Controls
         Display = null;
         TextInput = null;
         Validation = null;
+        TextAreaInput = null;
+        CheckboxInput = null;
+        SwitchInput = null;
+        DateInput = null;
+        TimeInput = null;
+        SliderInput = null;
+        StepperInput = null;
     }
 }

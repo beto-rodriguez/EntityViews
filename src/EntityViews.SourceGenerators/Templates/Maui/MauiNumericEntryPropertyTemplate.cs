@@ -1,4 +1,4 @@
-﻿namespace EntityViews.SourceGenerators.Templates.Input;
+﻿namespace EntityViews.SourceGenerators.Templates.Maui;
 
 public class MauiNumericEntryPropertyTemplate
 {

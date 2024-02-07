@@ -1,6 +1,6 @@
-﻿namespace EntityViews.SourceGenerators.Templates.Input;
+﻿namespace EntityViews.SourceGenerators.Templates.Maui;
 
-public class MauiTimePickerPropertyTemplate
+public class MauiSwitchPropertyTemplate
 {
     public static string Build(InputTemplateParams p)
     {
@@ -25,32 +25,26 @@ public class {property.Name}Input : StackLayout
         var label = new {Controls.GetDisplayClassName()}();
         {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
 
-        var input = new {Controls.GetTimeInputClassName()}();
-        {Controls.GetTimeInputRef("input")}
+        var input = new {Controls.GetSwitchInputClassName()}();
+        {Controls.GetSwitchInputRef("input")}
             .Bind(
-                TimePicker.TimeProperty,
+                Switch.IsToggledProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
-                setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-        {Controls.GetTimeInputRef("input")}.Triggers.Add(
-            new DataTrigger(typeof(TimePicker))
-            {{
-                Binding = new Binding(""{property.Name}HasError""),
-                Value = true,
-                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {Controls.OnErrorBackgroundColor} }} }},
-            }});
+                setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
+        Input = {Controls.GetDateInputRef("input")};
 
         var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
         {Controls.GetValidationRef("validationLabel")}
             .Bind(
                 Label.TextProperty,
-                getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+                getter: static (ToDoViewModel vm) => vm.IsDone);
 
         Children.Add(label);
-        Children.Add(Input = input);
+        Children.Add(input);
         Children.Add(validationLabel);
     }}
 
-    public TimePicker Input {{ get; }}
+    public Switch Input {{ get; }}
 }}
 ";
     }

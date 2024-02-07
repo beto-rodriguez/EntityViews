@@ -16,8 +16,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Models", "samples\Models\Mo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MauiApp1", "samples\MauiApp1\MauiApp1.csproj", "{77C0522B-B02B-49D4-9F10-D0F5C4553845}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EntityViews.Attributes", "src\EntityViews.Attributes\EntityViews.Attributes.csproj", "{1531BD6A-5FD4-4DE3-970A-9814368BBAE0}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,10 +36,6 @@ Global
 		{77C0522B-B02B-49D4-9F10-D0F5C4553845}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{77C0522B-B02B-49D4-9F10-D0F5C4553845}.Release|Any CPU.Build.0 = Release|Any CPU
 		{77C0522B-B02B-49D4-9F10-D0F5C4553845}.Release|Any CPU.Deploy.0 = Release|Any CPU
-		{1531BD6A-5FD4-4DE3-970A-9814368BBAE0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{1531BD6A-5FD4-4DE3-970A-9814368BBAE0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{1531BD6A-5FD4-4DE3-970A-9814368BBAE0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{1531BD6A-5FD4-4DE3-970A-9814368BBAE0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
