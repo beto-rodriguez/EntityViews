@@ -26,11 +26,12 @@ public class {property.Name}Input : StackLayout
         {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
 
         var input = new {Controls.GetCheckboxInputClassName()}();
-        {Controls.GetCheckboxInputRef("input")}
+        input
             .Bind(
                 CheckBox.IsCheckedProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
+        Input = input;
 
         var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
         {Controls.GetValidationRef("validationLabel")}
@@ -42,6 +43,8 @@ public class {property.Name}Input : StackLayout
         Children.Add(input);
         Children.Add(validationLabel);
     }}
+
+    Public CheckBox Input {{ get; }};
 }}
 ";
     }

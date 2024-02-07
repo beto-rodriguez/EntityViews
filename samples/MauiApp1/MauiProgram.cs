@@ -1,4 +1,5 @@
-﻿using CommunityToolkit.Maui.Markup;
+﻿using CommunityToolkit.Maui;
+using CommunityToolkit.Maui.Markup;
 using Microsoft.Extensions.Logging;
 
 namespace MauiApp1;
@@ -9,6 +10,7 @@ public static class MauiProgram
         var builder = MauiApp.CreateBuilder();
         builder
             .UseMauiApp<App>()
+            .UseMauiCommunityToolkit()
             .UseMauiCommunityToolkitMarkup()
             .ConfigureFonts(fonts =>
             {

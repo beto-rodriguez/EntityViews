@@ -46,9 +46,11 @@ public class {property.Name}Input : StackLayout
                 getter: static ({viewModelName} vm) => vm.{property.Name}Error);
 
         Children.Add(label);
-        Children.Add(input);
+        Children.Add(Input = input);
         Children.Add(validationLabel);
     }}
+
+    public TimePicker Input {{ get; }}
 }}
 ";
     }

@@ -38,6 +38,7 @@ public class {property.Name}Input : StackLayout
                 Value = true,
                 Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {Controls.OnErrorBackgroundColor} }} }},
             }});
+        Input = {Controls.GetDateInputRef("input")};
 
         var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
         {Controls.GetValidationRef("validationLabel")}
@@ -49,6 +50,8 @@ public class {property.Name}Input : StackLayout
         Children.Add(input);
         Children.Add(validationLabel);
     }}
+
+    public DatePicker Input {{ get; }}
 }}
 ";
     }

@@ -41,6 +41,10 @@ public class ToDoModel
     public DateTime Date { get; set; }
     public TimeSpan Time { get; set; }
 
+    [Required]
+    [CreditCard]
+    public string CreditCard { get; set; } = string.Empty;
+
     [MauiSwitchInput]
     public bool IsDone { get; set; }
 

@@ -31,6 +31,7 @@ public class {property.Name}Input : StackLayout
                 Switch.IsToggledProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
+        Input = {Controls.GetDateInputRef("input")};
 
         var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
         {Controls.GetValidationRef("validationLabel")}
@@ -42,6 +43,8 @@ public class {property.Name}Input : StackLayout
         Children.Add(input);
         Children.Add(validationLabel);
     }}
+
+    public Switch Input {{ get; }}
 }}
 ";
     }

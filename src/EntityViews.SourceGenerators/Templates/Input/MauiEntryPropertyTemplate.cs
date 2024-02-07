@@ -50,6 +50,7 @@ public class {property.Name}Input : StackLayout
             (({viewModelName})BindingContext).ValidateDirtyProperty(
                 ""{property.Name}"", {Controls.GetTextInputRef("input")}.Text is not null && {Controls.GetTextInputRef("input")}.Text.Length > 0);
         }};
+        Input = {Controls.GetTextInputRef("input")};
 
         var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
         {Controls.GetValidationRef("validationLabel")}
@@ -61,6 +62,8 @@ public class {property.Name}Input : StackLayout
         Children.Add(input);
         Children.Add(validationLabel);
     }}
+
+    public Entry Input {{ get; }}
 }}
 ";
     }

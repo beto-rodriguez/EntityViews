@@ -53,6 +53,7 @@ public class {property.Name}Input : StackLayout
             (({viewModelName})BindingContext).ValidateDirtyProperty(
                 ""{property.Name}"", _input.Text is not null && _input.Text.Length > 0);
         }};
+        _input.Keyboard = Keyboard.Numeric;
 
         // numeric fields, subscribe to the Validating event, then it tries to parse the input
         // if it fails, it adds a validation error
@@ -96,6 +97,8 @@ public class {property.Name}Input : StackLayout
                 string.Format(
                     EntityViews.Attributes.SpecialValidationMessages.ValidNumber, _input.Text, ""{property.Name}""));
     }}
+
+    public Entry Input => _input;
 }}
 ";
     }

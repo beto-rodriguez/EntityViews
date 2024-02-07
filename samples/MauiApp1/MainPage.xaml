@@ -16,18 +16,21 @@
         <viewModels:ToDoViewModel />
     </ContentPage.BindingContext>
 
-    <StackLayout Orientation="Vertical">
+    <ScrollView>
+        <StackLayout Orientation="Vertical">
 
-        <todoForm:NameInput />
-        <todoForm:DescriptionInput />
-        <todoForm:ReminderInput />
-        <todoForm:DoublePropInput/>
-        <todoForm:DateInput/>
-        <todoForm:TimeInput/>
-        <todoForm:SliderInput/>
-        <todoForm:StepperInput/>
+            <todoForm:NameInput />
+            <todoForm:DescriptionInput />
+            <todoForm:ReminderInput />
+            <todoForm:DoublePropInput/>
+            <todoForm:DateInput/>
+            <todoForm:TimeInput/>
+            <todoForm:SliderInput/>
+            <todoForm:StepperInput/>
+            <todoForm:CreditCardInput x:Name="CreditCardInput" />
 
-        <Button Text="Save" Command="{Binding SaveCommand}"/>
-    </StackLayout>
+            <Button Text="Save" Command="{Binding SaveCommand}"/>
+        </StackLayout>
+    </ScrollView>
 
 </ContentPage>
