@@ -18,33 +18,23 @@ using {viewModelNamespace};
 
 namespace {formNamespace};
 
-public class {property.Name}Input : StackLayout
+public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Input.EntityViewsSwitchInput"}
 {{
     public {property.Name}Input()
     {{
-        var label = new {Controls.GetDisplayClassName()}();
-        {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
+        Label.Text({propertyDisplaySource});
 
-        var input = new {Controls.GetSwitchInputClassName()}();
-        {Controls.GetSwitchInputRef("input")}
+        Input
             .Bind(
                 Switch.IsToggledProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
-        Input = {Controls.GetDateInputRef("input")};
 
-        var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
-        {Controls.GetValidationRef("validationLabel")}
+        ValidationLabel
             .Bind(
                 Label.TextProperty,
-                getter: static (ToDoViewModel vm) => vm.IsDone);
-
-        Children.Add(label);
-        Children.Add(input);
-        Children.Add(validationLabel);
+                getter: static ({viewModelName} vm) => vm.{property.Name}Error);
     }}
-
-    public Switch Input {{ get; }}
 }}
 ";
     }

@@ -30,7 +30,7 @@ public class MauiFormPropertyTemplate
         }
 
         var templateParams = new InputTemplateParams(
-            viewModelName, viewModelNamespace, formNamespace, property.GetPropertyDisplaySource(), property);
+            viewModelName, viewModelNamespace, formNamespace, property.GetPropertyDisplaySource(), property, null);
 
         return inputTemplate(templateParams);
     }

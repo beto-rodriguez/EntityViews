@@ -18,52 +18,42 @@ using {viewModelNamespace};
 
 namespace {formNamespace};
 
-public class {property.Name}Input : StackLayout
+public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Input.EntityViewsTextInput"}
 {{
     public {property.Name}Input()
     {{
-        var label = new {Controls.GetDisplayClassName()}();
-        {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
+        Input.Text({propertyDisplaySource});
 
-        var input = new {Controls.GetTextInputClassName()}();
-        {Controls.GetTextInputRef("input")}
+        Input
             .Bind(
                 Entry.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-        {Controls.GetTextInputRef("input")}.Triggers.Add(
+        Input.Triggers.Add(
             new DataTrigger(typeof(Entry))
             {{
                 Binding = new Binding(""{property.Name}HasError""),
                 Value = true,
-                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {Controls.OnErrorBackgroundColor} }} }},
+                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {_MauiDefaultInputs.OnErrorBackgroundColor} }} }},
             }});
         async Task<bool> UserKeepsTyping()
         {{
-            var txt = {Controls.GetTextInputRef("input")}.Text;
+            var txt = Input.Text;
             await Task.Delay(500);
-            return txt != {Controls.GetTextInputRef("input")}.Text;
+            return txt != Input.Text;
         }}
-        {Controls.GetTextInputRef("input")}.TextChanged += async (_, _) =>
+        Input.TextChanged += async (_, _) =>
         {{
             if (await UserKeepsTyping()) return;
             (({viewModelName})BindingContext).ValidateDirtyProperty(
-                ""{property.Name}"", {Controls.GetTextInputRef("input")}.Text is not null && {Controls.GetTextInputRef("input")}.Text.Length > 0);
+                ""{property.Name}"", Input.Text is not null && Input.Text.Length > 0);
         }};
-        Input = {Controls.GetTextInputRef("input")};
 
-        var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
-        {Controls.GetValidationRef("validationLabel")}
+        ValidationLabel
             .Bind(
                 Label.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name}Error);
-
-        Children.Add(label);
-        Children.Add(input);
-        Children.Add(validationLabel);
     }}
-
-    public Entry Input {{ get; }}
 }}
 ";
     }

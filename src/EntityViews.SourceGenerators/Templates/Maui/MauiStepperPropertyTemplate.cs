@@ -18,33 +18,23 @@ using {viewModelNamespace};
 
 namespace {formNamespace};
 
-public class {property.Name}Input : StackLayout
+public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Input.EntityViewsStepperInput"}
 {{
     public {property.Name}Input()
     {{
-        var label = new {Controls.GetDisplayClassName()}();
-        {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
+        Label.Text({propertyDisplaySource});
 
-        var input = new {Controls.GetStepperInputClassName()}();
-        {Controls.GetStepperInputRef("input")}
+        Input
             .Bind(
                 Stepper.ValueProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-        Input = {Controls.GetDateInputRef("input")};
 
-        var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
-        {Controls.GetValidationRef("validationLabel")}
+        ValidationLabel
             .Bind(
                 Label.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name}Error);
-
-        Children.Add(label);
-        Children.Add(input);
-        Children.Add(validationLabel);
     }}
-
-    public Stepper Input {{ get; }}
 }}
 ";
     }

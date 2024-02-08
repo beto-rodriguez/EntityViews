@@ -2,7 +2,7 @@
 
 namespace MauiApp1.Input;
 
-[DisplayControl]
+//[DisplayControl]
 public class CustomDisplayLabel : Border
 {
     public CustomDisplayLabel()
@@ -13,7 +13,6 @@ public class CustomDisplayLabel : Border
         };
     }
 
-    [ControlProperty]
     public Label Label { get; set; }
 }
 

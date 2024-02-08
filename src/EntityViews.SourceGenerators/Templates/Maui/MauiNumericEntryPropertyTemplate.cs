@@ -18,57 +18,48 @@ using {viewModelNamespace};
 
 namespace {formNamespace};
 
-public class {property.Name}Input : StackLayout
+public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Input.EntityViewsNumberInput"}
 {{
-    private readonly Entry _input;
     private {viewModelName}? _subscribedTo;
 
     public {property.Name}Input()
     {{
-        var label = new {Controls.GetDisplayClassName()}();
-        {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
+        Label.Text({propertyDisplaySource});
 
-        var inputControl = new {Controls.GetTextInputClassName()}();
-        _input = {Controls.GetTextInputRef("inputControl")};
-        _input.Bind(
+        Input.Bind(
             Entry.TextProperty,
             getter: static ({viewModelName} vm) => vm.{property.Name},
             setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-        _input.Triggers.Add(
+        Input.Triggers.Add(
             new DataTrigger(typeof(Entry))
             {{
                 Binding = new Binding(""{property.Name}HasError""),
                 Value = true,
-                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {Controls.OnErrorBackgroundColor} }} }},
+                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {_MauiDefaultInputs.OnErrorBackgroundColor} }} }},
             }});
         async Task<bool> UserKeepsTyping()
         {{
-            var txt = _input.Text;
+            var txt = Input.Text;
             await Task.Delay(500);
-            return txt != _input.Text;
+            return txt != Input.Text;
         }}
-        _input.TextChanged += async (_, _) =>
+        Input.TextChanged += async (_, _) =>
         {{
             if (await UserKeepsTyping()) return;
             (({viewModelName})BindingContext).ValidateDirtyProperty(
-                ""{property.Name}"", _input.Text is not null && _input.Text.Length > 0);
+                ""{property.Name}"", Input.Text is not null && Input.Text.Length > 0);
         }};
-        _input.Keyboard = Keyboard.Numeric;
+        Input.Keyboard = Keyboard.Numeric;
 
         // numeric fields, subscribe to the Validating event, then it tries to parse the input
         // if it fails, it adds a validation error
         BindingContextChanged += (_, _) => Subscribe();
         Subscribe();
 
-        var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
-        {Controls.GetValidationRef("validationLabel")}
+        ValidationLabel
             .Bind(
                 Label.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name}Error);
-
-        Children.Add(label);
-        Children.Add(_input);
-        Children.Add(validationLabel);
     }}
 
     private void Subscribe()
@@ -90,15 +81,13 @@ public class {property.Name}Input : StackLayout
     private void OnValidating({viewModelName} vm, EntityViews.Attributes.ValidatingEventArgs args)
     {{
         if (args.PropertyName is not null && args.PropertyName != ""{property.Name}"") return;
-        if (string.IsNullOrWhiteSpace(_input.Text)) return;
-        if (!{property.Type.Name}.TryParse(_input.Text, out _))
+        if (string.IsNullOrWhiteSpace(Input.Text)) return;
+        if (!{property.Type.Name}.TryParse(Input.Text, out _))
             vm.AddValidationError(
                 ""{property.Name}"",
                 string.Format(
-                    EntityViews.Attributes.SpecialValidationMessages.ValidNumber, _input.Text, ""{property.Name}""));
+                    EntityViews.Attributes.SpecialValidationMessages.ValidNumber, Input.Text, ""{property.Name}""));
     }}
-
-    public Entry Input => _input;
 }}
 ";
     }

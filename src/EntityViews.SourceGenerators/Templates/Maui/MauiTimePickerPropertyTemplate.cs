@@ -18,39 +18,30 @@ using {viewModelNamespace};
 
 namespace {formNamespace};
 
-public class {property.Name}Input : StackLayout
+public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Input.EntityViewsTimePickerInput"}
 {{
     public {property.Name}Input()
     {{
-        var label = new {Controls.GetDisplayClassName()}();
-        {Controls.GetDisplayRef("label")}.Text({propertyDisplaySource});
+        Label.Text({propertyDisplaySource});
 
-        var input = new {Controls.GetTimeInputClassName()}();
-        {Controls.GetTimeInputRef("input")}
+        Input
             .Bind(
                 TimePicker.TimeProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-        {Controls.GetTimeInputRef("input")}.Triggers.Add(
+        Input.Triggers.Add(
             new DataTrigger(typeof(TimePicker))
             {{
                 Binding = new Binding(""{property.Name}HasError""),
                 Value = true,
-                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {Controls.OnErrorBackgroundColor} }} }},
+                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {_MauiDefaultInputs.OnErrorBackgroundColor} }} }},
             }});
 
-        var validationLabel = new {Controls.GetValidationClassName()}();{Controls.SetValidationTextColor("validationLabel")}
-        {Controls.GetValidationRef("validationLabel")}
+        ValidationLabel
             .Bind(
                 Label.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name}Error);
-
-        Children.Add(label);
-        Children.Add(Input = input);
-        Children.Add(validationLabel);
     }}
-
-    public TimePicker Input {{ get; }}
 }}
 ";
     }

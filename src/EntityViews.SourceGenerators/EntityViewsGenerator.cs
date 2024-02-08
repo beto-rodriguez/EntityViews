@@ -1,5 +1,6 @@
 ﻿using System.Collections.Immutable;
 using EntityViews.SourceGenerators.Templates;
+using EntityViews.SourceGenerators.Templates.Maui;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -14,10 +15,8 @@ public class EntityViewsGenerator : IIncrementalGenerator
     {
         context.RegisterPostInitializationOutput(i =>
         {
-            i.AddSource("EntityViews.Attributes.Input.g.cs", AttributesTemplate.Build());
+            i.AddSource("EntityViews.Attributes.g.cs", AttributesTemplate.Build());
         });
-
-        Controls.Clear();
 
         var classDeclarations = context.SyntaxProvider
             .CreateSyntaxProvider(
@@ -52,28 +51,9 @@ public class EntityViewsGenerator : IIncrementalGenerator
 
             var attributeName = attributeData.AttributeClass.ToDisplayString();
 
-            if (attributeName == "EntityViews.Attributes.Input.DisplayControlAttribute")
+            if (attributeName == "EntityViews.Attributes.EntityViewsControlAttribute")
             {
-                Controls.Display = new Controls.Control(
-                    $"{classSymbol.ContainingNamespace.ToDisplayString()}.{classSymbol.Name}",
-                    classSymbol.GetControlProperty());
-                continue;
-            }
-
-            if (attributeName == "EntityViews.Attributes.Input.TextControlAttribute")
-            {
-                Controls.TextInput = new Controls.Control(
-                    $"{classSymbol.ContainingNamespace.ToDisplayString()}.{classSymbol.Name}",
-                    classSymbol.GetControlProperty());
-                continue;
-            }
-
-            if (attributeName == "EntityViews.Attributes.Input.ValidationControlAttribute")
-            {
-                Controls.Validation = new Controls.Control(
-                    $"{classSymbol.ContainingNamespace.ToDisplayString()}.{classSymbol.Name}",
-                    classSymbol.GetControlProperty());
-                continue;
+                // ToDo something here...
             }
 
             if (attributeName == "EntityViews.Attributes.ViewModelAttribute")
@@ -129,6 +109,8 @@ public class EntityViewsGenerator : IIncrementalGenerator
     {
         if (classes.IsDefaultOrEmpty) return;
 
+        var generatedBaseTypes = false;
+
         foreach (var analysis in classes.Distinct())
         {
             if (analysis is null) continue;
@@ -166,6 +148,12 @@ public class EntityViewsGenerator : IIncrementalGenerator
             // add more kind of forms here?
             if (analysis.Form == 1)
             {
+                if (!generatedBaseTypes)
+                {
+                    context.AddSource("EntityViews.Input.g.cs", _MauiDefaultInputs.Build());
+                    generatedBaseTypes = true;
+                }
+
                 foreach (var property in properties)
                 {
                     context.AddSource(

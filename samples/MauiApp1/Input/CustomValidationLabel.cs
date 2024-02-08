@@ -13,7 +13,7 @@ public class CustomValidationLabel : Border
         };
     }
 
-    [ControlProperty]
+    //[ControlProperty]
     public Label Label { get; set; }
 }
 
