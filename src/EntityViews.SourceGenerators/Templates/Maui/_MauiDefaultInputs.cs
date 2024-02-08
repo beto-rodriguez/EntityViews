@@ -13,35 +13,29 @@ public class _MauiDefaultInputs
 namespace EntityViews.Input;
 
 /// <summary>
-/// Indicates that the marked class is a control for EntityViews.
-/// </summary>
-public class EntityViewsControlAttribute : Attribute
-{{ }}
-
-/// <summary>
 /// Defines a control for EntityViews.
 /// </summary>
 public interface IEntityViewsInput<T>
 {{
     /// <summary>
-    /// Gets the EntityViews input type.
+    /// Gets the label to display the property name, if null, the display label must be defined in the
+    /// <see cref=""IEntityViewsInput{{T}}.Initialized""/> method.
     /// </summary>
-    string InputType {{ get; }}
+    Label? Label {{ get; }}
 
     /// <summary>
-    /// Gets the label to display the property name.
+    /// Gets the input to bind to the property value, if null, the input must be defined in the
+    /// <see cref=""IEntityViewsInput{{T}}.Initialized""/> method.
     /// </summary>
-    Label Label {{ get; }}
+    T? Input {{ get; }}
 
     /// <summary>
-    /// Gets the input to bind to the property value.
+    /// Gets the label to display validation errors, if null, the validation label must be defined in the
+    /// <see cref=""IEntityViewsInput{{T}}.Initialized""/> method.
     /// </summary>
-    T Input {{ get; }}
+    Label? ValidationLabel {{ get; }}
 
-    /// <summary>
-    /// Gets the label to display validation errors.
-    /// </summary>
-    Label ValidationLabel {{ get; }}
+    void Initialized(string propertyName, string? displayName);
 }}
 
 // The interface implementation is irrelevant in this case,
@@ -52,10 +46,8 @@ public interface IEntityViewsInput<T>
 public abstract class EntityViewsInput<T> : VerticalStackLayout, IEntityViewsInput<T>
     where T : View, new()
 {{
-    public EntityViewsInput(string inputType)
+    public EntityViewsInput()
     {{
-        InputType = inputType ?? EntityViews.Attributes.InputTypes.Default;
-
         var label = new Label();
         var input = new T();
         var validationLabel = new Label();
@@ -69,59 +61,33 @@ public abstract class EntityViewsInput<T> : VerticalStackLayout, IEntityViewsInp
         ValidationLabel = validationLabel;
     }}
 
-    public string InputType {{ get; }}
+    public Label? Label {{ get; }}
 
-    public Label Label {{ get; }}
+    public T? Input {{ get; }}
 
-    public T Input {{ get; }}
+    public Label? ValidationLabel {{ get; }}
 
-    public Label ValidationLabel {{ get; }}
+    public virtual void Initialized(string propertyName, string? displayName)
+    {{  }}
 }}
 
-public class EntityViewsTextInput : EntityViewsInput<Entry>
-{{
-    public EntityViewsTextInput() : base(EntityViews.Attributes.InputTypes.Text) {{ }}
-}}
+public class EntityViewsTextInput : EntityViewsInput<Entry> {{ }}
 
-public class EntityViewsTextAreaInput : EntityViewsInput<Editor>
-{{
-    public EntityViewsTextAreaInput() : base(EntityViews.Attributes.InputTypes.TextArea) {{ }}
-}}
+public class EntityViewsTextAreaInput : EntityViewsInput<Editor> {{ }}
 
-public class EntityViewsNumberInput : EntityViewsInput<Entry>
-{{
-    public EntityViewsNumberInput() : base(EntityViews.Attributes.InputTypes.Number) {{ }}
-}}
+public class EntityViewsNumberInput : EntityViewsInput<Entry> {{ }}
 
-public class EntityViewsSwitchInput : EntityViewsInput<Switch>
-{{
-    public EntityViewsSwitchInput() : base(EntityViews.Attributes.InputTypes.Switch) {{ }}
-}}
+public class EntityViewsSwitchInput : EntityViewsInput<Switch> {{ }}
 
-public class EntityViewsCheckBoxInput : EntityViewsInput<CheckBox>
-{{
-    public EntityViewsCheckBoxInput() : base(EntityViews.Attributes.InputTypes.Checkbox) {{ }}
-}}
+public class EntityViewsCheckBoxInput : EntityViewsInput<CheckBox> {{ }}
 
-public class EntityViewsDatePickerInput : EntityViewsInput<DatePicker>
-{{
-    public EntityViewsDatePickerInput() : base(EntityViews.Attributes.InputTypes.DateTime) {{ }}
-}}
+public class EntityViewsDatePickerInput : EntityViewsInput<DatePicker> {{ }}
 
-public class EntityViewsTimePickerInput : EntityViewsInput<TimePicker>
-{{
-    public EntityViewsTimePickerInput() : base(EntityViews.Attributes.InputTypes.TimeSpan) {{ }}
-}}
+public class EntityViewsTimePickerInput : EntityViewsInput<TimePicker> {{ }}
 
-public class EntityViewsSliderInput : EntityViewsInput<Slider>
-{{
-    public EntityViewsSliderInput() : base(EntityViews.Attributes.InputTypes.Slider) {{ }}
-}}
+public class EntityViewsSliderInput : EntityViewsInput<Slider> {{ }}
 
-public class EntityViewsStepperInput : EntityViewsInput<Stepper>
-{{
-    public EntityViewsStepperInput() : base(EntityViews.Attributes.InputTypes.Stepper) {{ }}
-}}
+public class EntityViewsStepperInput : EntityViewsInput<Stepper> {{ }}
 ";
     }
 }

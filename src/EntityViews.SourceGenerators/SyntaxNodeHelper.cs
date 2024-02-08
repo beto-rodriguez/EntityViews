@@ -43,6 +43,13 @@ public static class SyntaxNodeHelper
         public HashSet<string> Ignore { get; } = ignore;
         public int Form { get; } = form;
         public Dictionary<string, string> Inputs { get; } = inputs;
+        public static Dictionary<string, string> BaseClasses { get; } = [];
+        public static string? GetBaseClass(string key)
+        {
+            return BaseClasses.TryGetValue(key, out var value)
+                ? value
+                : null;
+        }
     }
 
     public static ITypeSymbol? FindViewModelOfSymbol(this ViewModelAnalysis analysis, Compilation compilation)

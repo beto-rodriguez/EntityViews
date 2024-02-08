@@ -22,37 +22,44 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
 {{
     public {property.Name}Input()
     {{
-        Label.Text({propertyDisplaySource});
+        if (Label is not null)
+            Label.Text({propertyDisplaySource});
 
-        Input
-            .Bind(
-                Editor.TextProperty,
-                getter: static ({viewModelName} vm) => vm.{property.Name},
-                setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-        Input.Triggers.Add(
-            new DataTrigger(typeof(Editor))
+        if (Input is not null)
+        {{
+            Input
+                .Bind(
+                    Editor.TextProperty,
+                    getter: static ({viewModelName} vm) => vm.{property.Name},
+                    setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
+            Input.Triggers.Add(
+                new DataTrigger(typeof(Editor))
+                {{
+                    Binding = new Binding(""{property.Name}HasError""),
+                    Value = true,
+                    Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {_MauiDefaultInputs.OnErrorBackgroundColor} }} }},
+                }});
+            async Task<bool> UserKeepsTyping()
             {{
-                Binding = new Binding(""{property.Name}HasError""),
-                Value = true,
-                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {_MauiDefaultInputs.OnErrorBackgroundColor} }} }},
-            }});
-        async Task<bool> UserKeepsTyping()
-        {{
-            var txt = Input.Text;
-            await Task.Delay(500);
-            return txt != Input.Text;
+                var txt = Input.Text;
+                await Task.Delay(500);
+                return txt != Input.Text;
+            }}
+            Input.TextChanged += async (_, _) =>
+            {{
+                if (await UserKeepsTyping()) return;
+                (({viewModelName})BindingContext).ValidateDirtyProperty(
+                    ""{property.Name}"", Input.Text is not null && Input.Text.Length > 0);
+            }};
         }}
-        Input.TextChanged += async (_, _) =>
-        {{
-            if (await UserKeepsTyping()) return;
-            (({viewModelName})BindingContext).ValidateDirtyProperty(
-                ""{property.Name}"", Input.Text is not null && Input.Text.Length > 0);
-        }};
 
-        ValidationLabel
-            .Bind(
-                Label.TextProperty,
-                getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+        if (ValidationLabel is not null)
+            ValidationLabel
+                .Bind(
+                    Label.TextProperty,
+                    getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+
+        Initialized(""{property.Name}"", {propertyDisplaySource});
     }}
 }}
 ";

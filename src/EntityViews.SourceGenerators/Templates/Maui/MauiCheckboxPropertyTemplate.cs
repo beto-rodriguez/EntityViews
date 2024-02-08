@@ -22,18 +22,23 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
 {{
     public {property.Name}Input()
     {{
-        Label.Text({propertyDisplaySource});
+        if (Label is not null)
+            Label.Text({propertyDisplaySource});
 
-        Input
-            .Bind(
-                CheckBox.IsCheckedProperty,
-                getter: static ({viewModelName} vm) => vm.{property.Name},
-                setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
+        if (Input is not null)
+            Input
+                .Bind(
+                    CheckBox.IsCheckedProperty,
+                    getter: static ({viewModelName} vm) => vm.{property.Name},
+                    setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
 
-        ValidationLabel
-            .Bind(
-                Label.TextProperty,
-                getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+        if (ValidationLabel is not null)
+            ValidationLabel
+                .Bind(
+                    Label.TextProperty,
+                    getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+
+        Initialized(""{property.Name}"", {propertyDisplaySource});
     }}
 }}
 ";

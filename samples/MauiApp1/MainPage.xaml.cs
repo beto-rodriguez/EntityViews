@@ -8,7 +8,7 @@ public partial class MainPage : ContentPage
     {
         InitializeComponent();
 
-        CreditCardInput.Input.Behaviors.Add(new MaskedBehavior { Mask = "XXXX XXXX XXXX XXXX " });
+        //CreditCardInput.Input.Behaviors.Add(new MaskedBehavior { Mask = "XXXX XXXX XXXX XXXX " });
     }
 }
 

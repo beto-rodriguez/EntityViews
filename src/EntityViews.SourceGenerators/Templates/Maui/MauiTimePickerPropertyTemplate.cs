@@ -22,25 +22,32 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
 {{
     public {property.Name}Input()
     {{
-        Label.Text({propertyDisplaySource});
+        if (Label is not null)
+            Label.Text({propertyDisplaySource});
 
-        Input
-            .Bind(
-                TimePicker.TimeProperty,
-                getter: static ({viewModelName} vm) => vm.{property.Name},
-                setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-        Input.Triggers.Add(
-            new DataTrigger(typeof(TimePicker))
-            {{
-                Binding = new Binding(""{property.Name}HasError""),
-                Value = true,
-                Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {_MauiDefaultInputs.OnErrorBackgroundColor} }} }},
-            }});
+        if (Input is not null)
+        {{
+            Input
+                .Bind(
+                    TimePicker.TimeProperty,
+                    getter: static ({viewModelName} vm) => vm.{property.Name},
+                    setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
+            Input.Triggers.Add(
+                new DataTrigger(typeof(TimePicker))
+                {{
+                    Binding = new Binding(""{property.Name}HasError""),
+                    Value = true,
+                    Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {_MauiDefaultInputs.OnErrorBackgroundColor} }} }},
+                }});
+        }}
 
-        ValidationLabel
-            .Bind(
-                Label.TextProperty,
-                getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+        if (ValidationLabel is not null)
+            ValidationLabel
+                .Bind(
+                    Label.TextProperty,
+                    getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+
+        Initialized(""{property.Name}"", {propertyDisplaySource});
     }}
 }}
 ";

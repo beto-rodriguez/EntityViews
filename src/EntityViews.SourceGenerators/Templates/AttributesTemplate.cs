@@ -53,26 +53,11 @@ public class IgnorePropertyAttribute : Attribute
 { }
 
 /// <summary>
-/// Defines the event arguments for the Validating event.
+/// Indicates that the marked class is a control for EntityViews.
 /// </summary>
-/// <param name=""propertyName""></param>
-public class ValidatingEventArgs(string? propertyName)
+public class EntityViewsControlAttribute(string inputType) : Attribute
 {
-    /// <summary>
-    /// Gets the name of the property being validated, null if the entire view model is being validated.
-    /// </summary>
-    public string? PropertyName { get; } = propertyName;
-}
-
-/// <summary>
-/// Defines the special validation cases handled by the EntityViews library.
-/// </summary>
-public static class SpecialValidationMessages
-{
-    /// <summary>
-    /// Gets or sets the message for numeric inputs.
-    /// </summary>
-    public static string ValidNumber { get; set; } = ""'{0}' is not a valid number"";
+    public string InputType { get; } = inputType;
 }
 
 /// <summary>

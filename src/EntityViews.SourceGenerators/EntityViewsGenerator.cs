@@ -13,9 +13,12 @@ public class EntityViewsGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        ViewModelAnalysis.BaseClasses.Clear();
+
         context.RegisterPostInitializationOutput(i =>
         {
             i.AddSource("EntityViews.Attributes.g.cs", AttributesTemplate.Build());
+            i.AddSource("EntityViews.Validation.g.cs", ValidationTemplate.Build());
         });
 
         var classDeclarations = context.SyntaxProvider
@@ -51,9 +54,11 @@ public class EntityViewsGenerator : IIncrementalGenerator
 
             var attributeName = attributeData.AttributeClass.ToDisplayString();
 
+            // it seems that source generated attributes are not fully qualified.
             if (attributeName == "EntityViews.Attributes.EntityViewsControlAttribute")
             {
-                // ToDo something here...
+                var inputType = attributeData.ConstructorArguments.FirstOrDefault().Value?.ToString() ?? string.Empty;
+                ViewModelAnalysis.BaseClasses[inputType] = classSymbol.ToDisplayString();
             }
 
             if (attributeName == "EntityViews.Attributes.ViewModelAttribute")
@@ -164,7 +169,7 @@ public class EntityViewsGenerator : IIncrementalGenerator
                             classDeclaration.GetNameSpace() ?? string.Empty,
                             $"{rootNamespace}.EntityForms.{analysis.ViewModelOf.Name}",
                             property,
-                            analysis.Inputs));
+                            analysis));
                 }
             }
         }

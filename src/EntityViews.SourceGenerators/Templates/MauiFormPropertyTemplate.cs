@@ -1,6 +1,5 @@
 ﻿using EntityViews.SourceGenerators.Templates.Maui;
 using Microsoft.CodeAnalysis;
-
 namespace EntityViews.SourceGenerators.Templates;
 
 public class MauiFormPropertyTemplate
@@ -11,11 +10,11 @@ public class MauiFormPropertyTemplate
         string viewModelNamespace,
         string formNamespace,
         IPropertySymbol property,
-        Dictionary<string, string> inputs)
+        SyntaxNodeHelper.ViewModelAnalysis analysis)
     {
         _ = s_default_typeInput.TryGetValue(property.Type.Name.ToLower(), out var defaultInputKey);
 
-        if (inputs.TryGetValue(property.Name, out var inputType) && inputType != InputTypes.Default)
+        if (analysis.Inputs.TryGetValue(property.Name, out var inputType) && inputType != InputTypes.Default)
             defaultInputKey = inputType;
 
         if (!s_inputs.TryGetValue(defaultInputKey, out var inputTemplate))
@@ -30,7 +29,8 @@ public class MauiFormPropertyTemplate
         }
 
         var templateParams = new InputTemplateParams(
-            viewModelName, viewModelNamespace, formNamespace, property.GetPropertyDisplaySource(), property, null);
+            viewModelName, viewModelNamespace, formNamespace, property.GetPropertyDisplaySource(),
+            property, SyntaxNodeHelper.ViewModelAnalysis.GetBaseClass(defaultInputKey));
 
         return inputTemplate(templateParams);
     }
