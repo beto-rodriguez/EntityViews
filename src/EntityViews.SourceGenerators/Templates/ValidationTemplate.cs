@@ -16,13 +16,19 @@ namespace EntityViews.Validation;
 /// <summary>
 /// Defines the event arguments for the Validating event.
 /// </summary>
-/// <param name=""propertyName""></param>
-public class ValidatingEventArgs(string? propertyName)
+/// <param name=""propertyName"">The validated property name, null when all properties are validated.</param>
+/// <param name=""isValid"">A value indicating whether the validated properties are valid.</param>
+public class ValidatingEventArgs(string? propertyName, bool isValid)
 {
     /// <summary>
     /// Gets the name of the property being validated, null if the entire view model is being validated.
     /// </summary>
     public string? PropertyName { get; } = propertyName;
+
+    /// <summary>
+    /// Gets a value indicating whether the validated properties are valid.
+    /// </summary>
+    public bool IsValid { get; } = isValid;
 }
 
 /// <summary>
@@ -67,13 +73,7 @@ public class ValidableViewModel : INotifyPropertyChanged
     /// </summary>
     public bool IsValid()
     {
-        // notify the UI to update and delete the previous error.
-        foreach (var error in _validationErrors)
-        {
-            _ = _validationErrors.Remove(error.Key);
-            OnPropertyChanged($""{error.Key}Error"");
-            OnPropertyChanged($""{error.Key}HasError"");
-        }
+        _validationErrors.Clear();
 
         var context = new ValidationContext(this);
         var results = new List<ValidationResult>();
@@ -85,7 +85,7 @@ public class ValidableViewModel : INotifyPropertyChanged
             foreach (var member in result.MemberNames)
                 AddValidationError(member, result.ErrorMessage ?? ""Unknown error."");
 
-        Validating?.Invoke(this, new(null));
+        Validating?.Invoke(this, new(null, _isValid));
         if (_isValid) _dirtyFields.Clear();
 
         return _isValid;
@@ -98,8 +98,6 @@ public class ValidableViewModel : INotifyPropertyChanged
     public bool ValidateProperty(string propertyName)
     {
         _ = _validationErrors.Remove(propertyName);
-        OnPropertyChanged($""{propertyName}Error"");
-        OnPropertyChanged($""{propertyName}HasError"");
 
         var context = new ValidationContext(this) { MemberName = propertyName };
         var results = new List<ValidationResult>();
@@ -112,7 +110,7 @@ public class ValidableViewModel : INotifyPropertyChanged
             foreach (var member in result.MemberNames)
                 AddValidationError(member, result.ErrorMessage ?? ""Unknown error."");
 
-        Validating?.Invoke(this, new(propertyName));
+        Validating?.Invoke(this, new(propertyName, _isValid));
 
         return _isValid;
     }
@@ -127,7 +125,7 @@ public class ValidableViewModel : INotifyPropertyChanged
         var isDirty = _dirtyFields.Contains(propertyName) || isDirtyValue;
         if (isDirty)
         {
-            ValidateProperty(propertyName);
+            _ = ValidateProperty(propertyName);
             _dirtyFields.Add(propertyName);
         }
     }
@@ -138,8 +136,6 @@ public class ValidableViewModel : INotifyPropertyChanged
         if (_validationErrors.ContainsKey(propertyName)) return;
 
         _validationErrors[propertyName] = errorMessage;
-        OnPropertyChanged($""{propertyName}Error"");
-        OnPropertyChanged($""{propertyName}HasError"");
         _isValid = false;
     }
 
@@ -152,13 +148,6 @@ public class ValidableViewModel : INotifyPropertyChanged
     protected void OnPropertyChanged(string propertyName)
     {
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    }
-
-    protected string GetError(string propertyName)
-    {
-        return _validationErrors.TryGetValue(propertyName, out var result)
-            ? result
-            : string.Empty;
     }
 }
 ";

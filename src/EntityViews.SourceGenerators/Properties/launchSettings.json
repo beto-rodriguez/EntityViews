@@ -3,6 +3,10 @@
     "Profile 1": {
       "commandName": "DebugRoslynComponent",
       "targetProject": "..\\..\\samples\\MauiApp1\\MauiApp1.csproj"
+    },
+    "Profile 2": {
+      "commandName": "DebugRoslynComponent",
+      "targetProject": "..\\..\\..\\Controli\\Controli.Client.ViewModels\\Controli.Client.ViewModels.csproj"
     }
   }
 }

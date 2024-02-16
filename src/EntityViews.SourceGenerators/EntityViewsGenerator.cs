@@ -57,7 +57,7 @@ public class EntityViewsGenerator : IIncrementalGenerator
             // it seems that source generated attributes are not fully qualified.
             if (attributeName == "EntityViews.Attributes.EntityViewsControlAttribute")
             {
-                var inputType = attributeData.ConstructorArguments.FirstOrDefault().Value?.ToString() ?? string.Empty;
+                var inputType = attributeData.ConstructorArguments.First().Value?.ToString() ?? string.Empty;
                 ViewModelAnalysis.BaseClasses[inputType] = classSymbol.ToDisplayString();
             }
 
@@ -69,8 +69,8 @@ public class EntityViewsGenerator : IIncrementalGenerator
                     .SelectMany(static v => v.Values)
                     .Select(static v => v.Value?.ToString() ?? string.Empty);
 
-                var baseType = attributeData.NamedArguments.First(x => x.Key == "BaseType");
-                var viewModelOf = (INamedTypeSymbol)baseType.Value.Value!;
+                var baseType = attributeData.ConstructorArguments.First();
+                var viewModelOf = (INamedTypeSymbol)baseType.Value!;
 
                 var forms = attributeData.NamedArguments.FirstOrDefault(x => x.Key == "Form");
                 var form = forms.Value.Value is null ? 0 : (int)forms.Value.Value;

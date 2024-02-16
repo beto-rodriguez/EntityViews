@@ -22,32 +22,29 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
 {{
     public {property.Name}Input()
     {{
-        if (Label is not null)
-            Label.Text({propertyDisplaySource});
+        Input
+            .Bind(
+                TimePicker.TimeProperty,
+                getter: static ({viewModelName} vm) => vm.{property.Name},
+                setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
 
-        if (Input is not null)
-        {{
-            Input
-                .Bind(
-                    TimePicker.TimeProperty,
-                    getter: static ({viewModelName} vm) => vm.{property.Name},
-                    setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-            Input.Triggers.Add(
-                new DataTrigger(typeof(TimePicker))
-                {{
-                    Binding = new Binding(""{property.Name}HasError""),
-                    Value = true,
-                    Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {_MauiDefaultInputs.OnErrorBackgroundColor} }} }},
-                }});
-        }}
-
-        if (ValidationLabel is not null)
-            ValidationLabel
-                .Bind(
-                    Label.TextProperty,
-                    getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+        Input.Margin = new(7, 20, 7, 0);
+        InputBackgroundColor = Colors.Transparent;
 
         Initialized(""{property.Name}"", {propertyDisplaySource});
+    }}
+
+    public override void Initialized(string propertyName, string? displayName)
+    {{
+        base.Initialized(propertyName, displayName);
+
+        Transform(
+            true,
+            new(0, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+            .7,
+            new(5, 0),
+            new(0.5f, 1, 0, HighlightBorderHeight),
+            1);
     }}
 }}
 ";

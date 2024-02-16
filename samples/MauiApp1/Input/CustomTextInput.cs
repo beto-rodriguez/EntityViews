@@ -8,7 +8,7 @@ using UraniumUI.Material.Controls;
 
 namespace MauiApp1.Input;
 
-[EntityViewsControl(InputTypes.Text)]
+//[EntityViewsControl(InputTypes.Text)]
 public class CustomTextInput : TextField, IEntityViewsInput<Entry>
 {
     public Entry? Input => null;
@@ -16,6 +16,16 @@ public class CustomTextInput : TextField, IEntityViewsInput<Entry>
     public Label? Label => null;
 
     public Label? ValidationLabel => null;
+
+    public void ClearValidationError()
+    {
+        throw new NotImplementedException();
+    }
+
+    public void DisplayValidationError(string message)
+    {
+        throw new NotImplementedException();
+    }
 
     public void Initialized(string propertyName, string? displayName)
     {

@@ -22,9 +22,6 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
 {{
     public {property.Name}Input()
     {{
-        if (Label is not null)
-            Label.Text({propertyDisplaySource});
-
         if (Input is not null)
             Input
                 .Bind(
@@ -32,11 +29,8 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
                     getter: static ({viewModelName} vm) => vm.{property.Name},
                     setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
 
-        if (ValidationLabel is not null)
-            ValidationLabel
-                .Bind(
-                    Label.TextProperty,
-                    getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+        _label.IsVisible = false;
+        InputBackgroundColor = Colors.Transparent;
 
         Initialized(""{property.Name}"", {propertyDisplaySource});
     }}

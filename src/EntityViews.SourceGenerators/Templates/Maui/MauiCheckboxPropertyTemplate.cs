@@ -22,21 +22,16 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
 {{
     public {property.Name}Input()
     {{
-        if (Label is not null)
-            Label.Text({propertyDisplaySource});
+        Input
+            .Bind(
+                CheckBox.IsCheckedProperty,
+                getter: static ({viewModelName} vm) => vm.{property.Name},
+                setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
 
-        if (Input is not null)
-            Input
-                .Bind(
-                    CheckBox.IsCheckedProperty,
-                    getter: static ({viewModelName} vm) => vm.{property.Name},
-                    setter: static ({viewModelName} vm, bool value) => vm.{property.Name} = value);
-
-        if (ValidationLabel is not null)
-            ValidationLabel
-                .Bind(
-                    Label.TextProperty,
-                    getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+        Input.Margin = new(7, 0, 7, 0);
+        InputBackgroundColor = Colors.Transparent;
+        _label.TranslationX = 30;
+        AbsoluteLayout.SetLayoutBounds(Input, new(0, 1, 1, 1));
 
         Initialized(""{property.Name}"", {propertyDisplaySource});
     }}

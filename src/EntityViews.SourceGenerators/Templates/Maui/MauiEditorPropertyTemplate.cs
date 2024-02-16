@@ -22,44 +22,63 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
 {{
     public {property.Name}Input()
     {{
-        if (Label is not null)
-            Label.Text({propertyDisplaySource});
+        Input
+            .Bind(
+                Editor.TextProperty,
+                getter: static ({viewModelName} vm) => vm.{property.Name},
+                setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
 
-        if (Input is not null)
+        async Task<bool> UserKeepsTyping()
         {{
-            Input
-                .Bind(
-                    Editor.TextProperty,
-                    getter: static ({viewModelName} vm) => vm.{property.Name},
-                    setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-            Input.Triggers.Add(
-                new DataTrigger(typeof(Editor))
-                {{
-                    Binding = new Binding(""{property.Name}HasError""),
-                    Value = true,
-                    Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {_MauiDefaultInputs.OnErrorBackgroundColor} }} }},
-                }});
-            async Task<bool> UserKeepsTyping()
-            {{
-                var txt = Input.Text;
-                await Task.Delay(500);
-                return txt != Input.Text;
-            }}
-            Input.TextChanged += async (_, _) =>
-            {{
-                if (await UserKeepsTyping()) return;
-                (({viewModelName})BindingContext).ValidateDirtyProperty(
-                    ""{property.Name}"", Input.Text is not null && Input.Text.Length > 0);
-            }};
+            var txt = Input.Text;
+            await Task.Delay(500);
+            return txt != Input.Text;
         }}
+        Input.TextChanged += async (_, _) =>
+        {{
+            if (await UserKeepsTyping()) return;
+            (({viewModelName})BindingContext).ValidateDirtyProperty(
+                ""{property.Name}"", Input.Text is not null && Input.Text.Length > 0);
+        }};
 
-        if (ValidationLabel is not null)
-            ValidationLabel
-                .Bind(
-                    Label.TextProperty,
-                    getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+        var auto = AbsoluteLayout.AutoSize;
+
+        Input.Focused += (s, e) =>
+        {{
+            Transform(
+                true,
+                new(0, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+                .7,
+                new(5, 0),
+                new(0.5f, 1, 1, HighlightBorderHeight));
+        }};
+        Input.Unfocused += (s, e) =>
+        {{
+            Transform(
+                false,
+                new(0, 0.5, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+                1,
+                new(0),
+                new(0.5f, 1, 0, HighlightBorderHeight));
+        }};
+
+        Input.Margin = new(7, 14, 7, 0);
+        InputMinimumHeightRequest = 120;
 
         Initialized(""{property.Name}"", {propertyDisplaySource});
+    }}
+
+    public override void Initialized(string propertyName, string? displayName)
+    {{
+        base.Initialized(propertyName, displayName);
+
+        Transform(
+            true,
+            new(0, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+            .7,
+            new(5, 0),
+            new(0.5f, 1, 0, HighlightBorderHeight),
+            1);
     }}
 }}
 ";

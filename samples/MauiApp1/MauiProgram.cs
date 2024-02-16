@@ -1,6 +1,8 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
 using Microsoft.Extensions.Logging;
+using Microsoft.Maui.Handlers;
+using Microsoft.Maui.Platform;
 using UraniumUI;
 
 namespace MauiApp1;
@@ -22,7 +24,7 @@ public static class MauiProgram
             });
 
 #if DEBUG
-		builder.Logging.AddDebug();
+        builder.Logging.AddDebug();
 #endif
 
         return builder.Build();

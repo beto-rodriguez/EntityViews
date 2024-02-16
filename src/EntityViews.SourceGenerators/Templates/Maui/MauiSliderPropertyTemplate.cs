@@ -22,23 +22,31 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
 {{
     public {property.Name}Input()
     {{
-        if (Label is not null)
-            Label.Text({propertyDisplaySource});
+        Input
+            .Bind(
+                Slider.ValueProperty,
+                getter: static ({viewModelName} vm) => vm.{property.Name},
+                setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
 
-        if (Input is not null)
-            input
-                .Bind(
-                    Slider.ValueProperty,
-                    getter: static ({viewModelName} vm) => vm.{property.Name},
-                    setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-
-        if (ValidationLabel is not null)
-            ValidationLabel
-                .Bind(
-                    Label.TextProperty,
-                    getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+        Input.Margin = new(7, 15, 7, 0);
+        InputBackgroundColor = Colors.Transparent;
 
         Initialized(""{property.Name}"", {propertyDisplaySource});
+    }}
+
+    public override void Initialized(string propertyName, string? displayName)
+    {{
+        base.Initialized(propertyName, displayName);
+
+        Transform(
+            true,
+            new(0, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+            .7,
+            new(5, 0),
+            new(0.5f, 1, 0, HighlightBorderHeight),
+            1);
+
+        Input.ValueChanged += (_, _) => _label.Text = $""{{displayName}} {{Input.Value}}"";
     }}
 }}
 ";

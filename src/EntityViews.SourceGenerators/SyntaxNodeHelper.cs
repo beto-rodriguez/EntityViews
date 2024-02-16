@@ -166,8 +166,6 @@ public static class SyntaxNodeHelper
 @$"
     private {property.Type} {propertyField}{initialValue};{(annotations.Length > 0 ? "\r\n" + annotations : string.Empty)}
     public {property.Type} {property.Name} {{ get => {propertyField}; set => SetProperty(ref {propertyField}, value, nameof({property.Name})); }}
-    public string {property.Name}Error => GetError(nameof({property.Name}));
-    public bool {property.Name}HasError => {property.Name}Error.Length > 0;
 ";
     }
 }

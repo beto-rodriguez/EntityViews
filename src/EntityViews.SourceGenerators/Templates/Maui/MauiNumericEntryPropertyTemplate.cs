@@ -25,76 +25,62 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
 
     public {property.Name}Input()
     {{
-        if (Label is not null)
-            Label.Text({propertyDisplaySource});
-
-        if (Input is not null)
-        {{
-            Input.Bind(
+        Input
+            .Bind(
                 Entry.TextProperty,
                 getter: static ({viewModelName} vm) => vm.{property.Name},
                 setter: static ({viewModelName} vm, {property.Type.Name} value) => vm.{property.Name} = value);
-            Input.Triggers.Add(
-                new DataTrigger(typeof(Entry))
-                {{
-                    Binding = new Binding(""{property.Name}HasError""),
-                    Value = true,
-                    Setters = {{ new Setter {{ Property = BackgroundColorProperty, Value = {_MauiDefaultInputs.OnErrorBackgroundColor} }} }},
-                }});
-            async Task<bool> UserKeepsTyping()
-            {{
-                var txt = Input.Text;
-                await Task.Delay(500);
-                return txt != Input.Text;
-            }}
-            Input.TextChanged += async (_, _) =>
-            {{
-                if (await UserKeepsTyping()) return;
-                (({viewModelName})BindingContext).ValidateDirtyProperty(
-                    ""{property.Name}"", Input.Text is not null && Input.Text.Length > 0);
-            }};
-            Input.Keyboard = Keyboard.Numeric;
 
-            // numeric fields, subscribe to the Validating event, then it tries to parse the input
-            // if it fails, it adds a validation error
-            BindingContextChanged += (_, _) => Subscribe();
-            Subscribe();
+        async Task<bool> UserKeepsTyping()
+        {{
+            var txt = Input.Text;
+            await Task.Delay(500);
+            return txt != Input.Text;
         }}
+        Input.TextChanged += async (_, _) =>
+        {{
+            if (await UserKeepsTyping()) return;
+            (({viewModelName})BindingContext).ValidateDirtyProperty(
+                ""{property.Name}"", Input.Text is not null && Input.Text.Length > 0);
+        }};
 
-        if (ValidationLabel is not null)
-            ValidationLabel
-                .Bind(
-                    Label.TextProperty,
-                    getter: static ({viewModelName} vm) => vm.{property.Name}Error);
+        Input.Keyboard = Keyboard.Numeric;
+
+        var auto = AbsoluteLayout.AutoSize;
+
+        Input.Focused += (s, e) =>
+        {{
+            Transform(
+                true,
+                new(0, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+                .7,
+                new(5, 0),
+                new(0.5f, 1, 1, HighlightBorderHeight));
+        }};
+        Input.Unfocused += (s, e) =>
+        {{
+            Transform(
+                string.IsNullOrWhiteSpace(Input.Text),
+                new(0, 0.5, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+                1,
+                new(0),
+                new(0.5f, 1, 0, HighlightBorderHeight));
+        }};
 
         Initialized(""{property.Name}"", {propertyDisplaySource});
     }}
 
-    private void Subscribe()
-    {{
-        var vm = BindingContext as {viewModelName};
-
-        var vmChanged = _subscribedTo != vm;
-        if (!vmChanged) return;
-
-        if (_subscribedTo is not null)
-            _subscribedTo.Validating -= OnValidating;
-
-        if (vm is not null)
-            vm.Validating += OnValidating;
-
-        _subscribedTo = vm;
-    }}
-
-    private void OnValidating(ValidableViewModel vm, ValidatingEventArgs args)
+    protected override void OnValidating(ValidableViewModel vm, ValidatingEventArgs args)
     {{
         if (Input is null) return;
-        if (args.PropertyName is not null && args.PropertyName != ""{property.Name}"") return;
+        if (args.PropertyName is not null && args.PropertyName != _propertyName) return;
         if (string.IsNullOrWhiteSpace(Input.Text)) return;
         if (!{property.Type.Name}.TryParse(Input.Text, out _))
             vm.AddValidationError(
                 ""{property.Name}"",
                 string.Format(SpecialValidationMessages.ValidNumber, Input.Text, ""{property.Name}""));
+
+        base.OnValidating(vm, args);
     }}
 }}
 ";

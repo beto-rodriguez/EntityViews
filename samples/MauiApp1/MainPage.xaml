@@ -16,18 +16,20 @@
         <viewModels:ToDoViewModel />
     </ContentPage.BindingContext>
 
-    <ScrollView>
+    <ScrollView Padding="20">
         <StackLayout Orientation="Vertical">
 
-            <todoForm:NameInput />
-            <todoForm:DescriptionInput />
-            <todoForm:ReminderInput />
-            <todoForm:DoublePropInput/>
-            <todoForm:DateInput/>
-            <todoForm:TimeInput/>
-            <todoForm:SliderInput/>
-            <todoForm:StepperInput/>
-            <todoForm:CreditCardInput x:Name="CreditCardInput" />
+            <todoForm:NameInput Margin="0, 10" />
+            <todoForm:ReminderInput Margin="0, 10"/>
+            <todoForm:DescriptionInput Margin="0, 10"/>
+            <todoForm:DoublePropInput Margin="0,10"/>
+            <todoForm:DateInput Margin="0,10"/>
+            <todoForm:TimeInput Margin="0,10"/>
+            <todoForm:IsDoneInput Margin="0,10"/>
+            <todoForm:SliderInput Margin="0, 10" />
+            <todoForm:StepperInput Margin="0, 10" />
+            <todoForm:SwitchInput Margin="0, 10"/>
+            <todoForm:CreditCardInput Margin="0, 10" />
 
             <Button Text="Save" Command="{Binding SaveCommand}"/>
         </StackLayout>

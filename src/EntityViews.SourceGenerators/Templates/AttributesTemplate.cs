@@ -12,12 +12,13 @@ namespace EntityViews.Attributes;
 /// <summary>
 /// Creates a ViewModel based on the given type.
 /// </summary>
-public class ViewModelAttribute() : Attribute
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class ViewModelAttribute(Type baseType) : Attribute
 {
     /// <summary>
     /// Gets or sets the base type.
     /// </summary>
-    public Type BaseType { get; set; } = typeof(object);
+    public Type BaseType { get; set; } = baseType;
 
     /// <summary>
     /// Gets the ignorable properties.
@@ -33,7 +34,8 @@ public class ViewModelAttribute() : Attribute
 /// <summary>
 /// Defines the input type to use for the specified property.
 /// </summary>
-public class FormInput() : Attribute
+[AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
+public sealed class FormInput() : Attribute
 {
     /// <summary>
     /// Gets or sets the name of the property.
@@ -49,13 +51,15 @@ public class FormInput() : Attribute
 /// <summary>
 /// Marks a property as ignorable, it will not be included in the generated ViewModel.
 /// </summary>
-public class IgnorePropertyAttribute : Attribute
+[AttributeUsage(AttributeTargets.Property)]
+public sealed class IgnorePropertyAttribute : Attribute
 { }
 
 /// <summary>
 /// Indicates that the marked class is a control for EntityViews.
 /// </summary>
-public class EntityViewsControlAttribute(string inputType) : Attribute
+[AttributeUsage(AttributeTargets.Class)]
+public sealed class EntityViewsControlAttribute(string inputType) : Attribute
 {
     public string InputType { get; } = inputType;
 }
