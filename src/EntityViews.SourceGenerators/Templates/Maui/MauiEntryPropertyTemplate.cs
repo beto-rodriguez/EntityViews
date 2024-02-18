@@ -22,6 +22,8 @@ public class {property.Name}Input : {p.BaseControlClassName ?? "EntityViews.Inpu
 {{
     public {property.Name}Input()
     {{
+        Input.BackgroundColor = Colors.Transparent;
+
         Input
             .Bind(
                 Entry.TextProperty,

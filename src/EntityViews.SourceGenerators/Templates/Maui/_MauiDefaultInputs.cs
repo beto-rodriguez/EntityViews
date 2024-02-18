@@ -49,6 +49,7 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
     where TInput : View, new()
     where THandler : IViewHandler
 {{
+    private bool _isInitialized;
     private ValidableViewModel? _subscribedTo;
     protected string _propertyName = string.Empty;
     protected Label _label;
@@ -59,6 +60,8 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
 
     public EntityViewsInput()
     {{
+        _isInitialized = true;
+
         _inputLayout = new AbsoluteLayout {{ MinimumHeightRequest = InputMinimumHeightRequest }};
         var ms = 7;
 
@@ -120,13 +123,14 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
 
     #region bindable properties
 
-    public static readonly BindableProperty InputMinimumHeightRequestProperty =
+       public static readonly BindableProperty InputMinimumHeightRequestProperty =
         BindableProperty.Create(
             propertyName: nameof(InputMinimumHeightRequest), returnType: typeof(double),
             declaringType: typeof(EntityViewsInput<TInput, THandler>), defaultValue: 46d,
             propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {{
                 var input = (EntityViewsInput<TInput, THandler>)bindable;
+                if (!input._isInitialized) return;
                 input._inputLayout.MinimumHeightRequest = (double)newValue;
             }});
 
@@ -137,6 +141,8 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
             propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {{
                 var input = (EntityViewsInput<TInput, THandler>)bindable;
+                if (!input._isInitialized) return;
+
                 var newRadius = (double)newValue;
 
                 if (input._subscribedTo is not null &&
@@ -162,6 +168,8 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
             propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {{
                 var input = (EntityViewsInput<TInput, THandler>)bindable;
+                if (!input._isInitialized) return;
+
                 input._inputBorder.BackgroundColor = (Color)newValue;
             }});
 
@@ -172,6 +180,8 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
             propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {{
                 var input = (EntityViewsInput<TInput, THandler>)bindable;
+                if (!input._isInitialized) return;
+
                 input._inputBorder.Stroke = new SolidColorBrush((Color)newValue);
                 input._validationBorder.BackgroundColor = (Color)newValue;
             }});
@@ -183,6 +193,8 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
             propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {{
                 var input = (EntityViewsInput<TInput, THandler>)bindable;
+                if (!input._isInitialized) return;
+
                 var label = (Label)input._validationBorder.Content!;
                 label.TextColor = (Color)newValue;
             }});
@@ -199,6 +211,8 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
             propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {{
                 var input = (EntityViewsInput<TInput, THandler>)bindable;
+                if (!input._isInitialized) return;
+
                 input._label.TextColor = (Color)newValue;
             }});
 
@@ -209,6 +223,8 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
             propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {{
                 var input = (EntityViewsInput<TInput, THandler>)bindable;
+                if (!input._isInitialized) return;
+
                 input._label.Opacity = (double)newValue;
             }});
 
@@ -219,6 +235,8 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
             propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
             {{
                 var input = (EntityViewsInput<TInput, THandler>)bindable;
+                if (!input._isInitialized) return;
+
                 input._activeBoxView.BackgroundColor = (Color)newValue;
             }});
 
