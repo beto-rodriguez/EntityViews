@@ -51,6 +51,7 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
 {{
     private bool _isInitialized;
     private ValidableViewModel? _subscribedTo;
+    protected bool _isFirstBinding = true;
     protected string _propertyName = string.Empty;
     protected Label _label;
     protected AbsoluteLayout _inputLayout;
@@ -108,8 +109,8 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
         }};
 
         _inputLayout.Children.Add(_inputBorder);
-        _inputLayout.Children.Add(input);
         _inputLayout.Children.Add(_label);
+        _inputLayout.Children.Add(input);
         _inputLayout.Children.Add(_activeBoxView);
 
         Children.Add(_inputLayout);
@@ -117,22 +118,25 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
 
         Input = input;
 
+        Input.Focused += (_, _) => SetInputFocus();
+        Input.Unfocused += (_, _) => RemoveInputFocus();
+
         BindingContextChanged += (_, _) => Subscribe();
         Subscribe();
     }}
 
     #region bindable properties
 
-       public static readonly BindableProperty InputMinimumHeightRequestProperty =
-        BindableProperty.Create(
-            propertyName: nameof(InputMinimumHeightRequest), returnType: typeof(double),
-            declaringType: typeof(EntityViewsInput<TInput, THandler>), defaultValue: 46d,
-            propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
-            {{
-                var input = (EntityViewsInput<TInput, THandler>)bindable;
-                if (!input._isInitialized) return;
-                input._inputLayout.MinimumHeightRequest = (double)newValue;
-            }});
+    public static readonly BindableProperty InputMinimumHeightRequestProperty =
+     BindableProperty.Create(
+         propertyName: nameof(InputMinimumHeightRequest), returnType: typeof(double),
+         declaringType: typeof(EntityViewsInput<TInput, THandler>), defaultValue: 46d,
+         propertyChanged: (BindableObject bindable, object oldValue, object newValue) =>
+         {{
+             var input = (EntityViewsInput<TInput, THandler>)bindable;
+             if (!input._isInitialized) return;
+             input._inputLayout.MinimumHeightRequest = (double)newValue;
+         }});
 
     public static readonly BindableProperty InputCornerRadiusProperty =
         BindableProperty.Create(
@@ -375,11 +379,19 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
         _validationBorder.IsVisible = false;
     }}
 
+    protected abstract bool CanRestoreLabelOnUnFocus {{ get; }}
+
+    protected struct LabelTransform
+    {{
+        public Rect Bounds {{ get; set; }}
+        public double Scale {{ get; set; }}
+        public Thickness Margin {{ get; set; }}
+    }}
+
     protected void Transform(
         bool canTransformLabel,
-        Rect labelEndBounds,
-        double labelEndScale,
-        Thickness labelEndMargin,
+        LabelTransform labelTransform,
+        bool canTransformBoxView,
         Rect boxViewBounds,
         uint length = 150)
     {{
@@ -389,6 +401,10 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
         var startLabelBounds = AbsoluteLayout.GetLayoutBounds(_label);
         var startLabelMargin = _label.Margin;
         var startBoxViewBounds = AbsoluteLayout.GetLayoutBounds(_activeBoxView);
+
+        var labelEndScale = labelTransform.Scale;
+        var labelEndBounds = labelTransform.Bounds;
+        var labelEndMargin = labelTransform.Margin;
 
         new Animation(
             t =>
@@ -409,14 +425,63 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
                             startLabelBounds.Width + t * (labelEndBounds.Width - startLabelBounds.Width),
                             startLabelBounds.Height + t * (labelEndBounds.Height - startLabelBounds.Height)));
                 }}
-                AbsoluteLayout.SetLayoutBounds(
-                    _activeBoxView,
-                    new Rect(
-                        startBoxViewBounds.X + t * (boxViewBounds.X - startBoxViewBounds.X),
-                        startBoxViewBounds.Y + t * (boxViewBounds.Y - startBoxViewBounds.Y),
-                        startBoxViewBounds.Width + t * (boxViewBounds.Width - startBoxViewBounds.Width),
-                        startBoxViewBounds.Height + t * (boxViewBounds.Height - startBoxViewBounds.Height)));
+
+                if (canTransformBoxView)
+                {{
+                    AbsoluteLayout.SetLayoutBounds(
+                        _activeBoxView,
+                        new Rect(
+                            startBoxViewBounds.X + t * (boxViewBounds.X - startBoxViewBounds.X),
+                            startBoxViewBounds.Y + t * (boxViewBounds.Y - startBoxViewBounds.Y),
+                            startBoxViewBounds.Width + t * (boxViewBounds.Width - startBoxViewBounds.Width),
+                            startBoxViewBounds.Height + t * (boxViewBounds.Height - startBoxViewBounds.Height)));
+                }}
             }}).Commit(this, ""Transform"", 16, length, Easing.CubicOut);
+    }}
+
+    protected virtual void OnValidating(
+        ValidableViewModel vm,
+        ValidatingEventArgs args)
+    {{
+        if (Input is null) return;
+        if (args.PropertyName is not null && args.PropertyName != _propertyName) return;
+
+        if (vm.ValidationErrors.TryGetValue(_propertyName, out var message))
+            DisplayValidationError(message);
+        else
+            ClearValidationError();
+    }}
+
+    protected abstract void OnInputHandlerChanged(THandler handler);
+
+    public virtual void SetInputFocus(uint speed = 150, bool? transformLabel = null, bool? transformViewBox = null)
+    {{
+        Transform(
+            transformLabel ?? true,
+            new LabelTransform
+            {{
+                Bounds = new(0, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+                Scale = 0.7,
+                Margin = new(5, 0)
+            }},
+            transformViewBox ?? true,
+            new(0.5f, 1, 1, HighlightBorderHeight),
+            speed);
+    }}
+
+    public virtual void RemoveInputFocus(uint speed = 150, bool? transformLabel = null, bool? transformViewBox = null)
+    {{
+        Transform(
+            transformLabel ?? CanRestoreLabelOnUnFocus,
+            new LabelTransform
+            {{
+                Bounds = new(0, 0.5, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+                Scale = 1,
+                Margin = new(0),
+            }},
+            transformViewBox ?? true,
+            new(0.5f, 1, 0, HighlightBorderHeight),
+            speed);
     }}
 
     private void Subscribe()
@@ -433,19 +498,7 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
             vm.Validating += OnValidating;
 
         _subscribedTo = vm;
-    }}
-
-    protected virtual void OnValidating(
-        ValidableViewModel vm,
-        ValidatingEventArgs args)
-    {{
-        if (Input is null) return;
-        if (args.PropertyName is not null && args.PropertyName != _propertyName) return;
-
-        if (vm.ValidationErrors.TryGetValue(_propertyName, out var message))
-            DisplayValidationError(message);
-        else
-            ClearValidationError();
+        _isFirstBinding = true;
     }}
 
     private void Input_HandlerChanged(object? sender, EventArgs e)
@@ -455,18 +508,23 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
 
         OnInputHandlerChanged((THandler)input.Handler);
     }}
-
-    protected abstract void OnInputHandlerChanged(THandler handler);
-}}
-
-public class EntityViewsCheckBoxInput : EntityViewsInput<CheckBox, ICheckBoxHandler>
-{{
-    protected override void OnInputHandlerChanged(ICheckBoxHandler handler)
-    {{ }}
 }}
 
 public class EntityViewsDatePickerInput : EntityViewsInput<DatePicker, IDatePickerHandler>
 {{
+    public EntityViewsDatePickerInput()
+    {{
+        Input.BackgroundColor = Colors.Transparent;
+    }}
+
+    public override void Initialized(string propertyName, string? displayName)
+    {{
+        base.Initialized(propertyName, displayName);
+        SetInputFocus(transformViewBox: false);
+    }}
+
+    protected override bool CanRestoreLabelOnUnFocus => false;
+
     protected override void OnInputHandlerChanged(IDatePickerHandler handler)
     {{
 #if ANDROID
@@ -486,6 +544,49 @@ public class EntityViewsDatePickerInput : EntityViewsInput<DatePicker, IDatePick
 
 public class EntityViewsTextAreaInput : EntityViewsInput<Editor, IEditorHandler>
 {{
+    public EntityViewsTextAreaInput()
+    {{
+        _label.Margin = new(0, 14, 0, 0);
+        AbsoluteLayout.SetLayoutBounds(_label, new(0, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize));
+        InputMinimumHeightRequest = 120;
+
+        Input.BackgroundColor = Colors.Transparent;
+        Input.TextChanged += OnTextChanged;
+        Input.Margin = new(7, 14, 7, 0);
+    }}
+
+    protected override bool CanRestoreLabelOnUnFocus => string.IsNullOrWhiteSpace(Input.Text);
+
+    public override void SetInputFocus(uint speed = 150, bool? transformLabel = null, bool? transformViewBox = null)
+    {{
+        Transform(
+            transformLabel ?? true,
+            new LabelTransform
+            {{
+                Bounds = new(0, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+                Scale = 0.7,
+                Margin = new(5, 0)
+            }},
+            transformViewBox ?? true,
+            new(0.5f, 1, 1, HighlightBorderHeight),
+            speed);
+    }}
+
+    public override void RemoveInputFocus(uint speed = 150, bool? transformLabel = null, bool? transformViewBox = null)
+    {{
+        Transform(
+            transformLabel ?? CanRestoreLabelOnUnFocus,
+            new LabelTransform
+            {{
+                Bounds = new(0, 0, AbsoluteLayout.AutoSize, AbsoluteLayout.AutoSize),
+                Scale = 1,
+                Margin = new(0, 14, 0, 0),
+            }},
+            transformViewBox ?? true,
+            new(0.5f, 1, 0, HighlightBorderHeight),
+            speed);
+    }}
+
     protected override void OnInputHandlerChanged(IEditorHandler handler)
     {{
 #if IOS17_0_OR_GREATER || MACCATALYST17_0_OR_GREATER
@@ -499,10 +600,39 @@ public class EntityViewsTextAreaInput : EntityViewsInput<Editor, IEditorHandler>
         handler.PlatformView.Style = null;
 #endif
     }}
+
+    private async void OnTextChanged(object? sender, EventArgs e)
+    {{
+        if (_isFirstBinding)
+        {{
+            if (!string.IsNullOrWhiteSpace(Input.Text)) SetInputFocus(transformViewBox: false);
+            _isFirstBinding = false;
+        }}
+
+        if (await UserKeepsTyping()) return;
+
+        ((ValidableViewModel)BindingContext).ValidateDirtyProperty(
+            _propertyName, Input.Text is not null && Input.Text.Length > 0);
+    }}
+
+    private async Task<bool> UserKeepsTyping()
+    {{
+        var txt = Input.Text;
+        await Task.Delay(500);
+        return txt != Input.Text;
+    }}
 }}
 
 public class EntityViewsTextInput : EntityViewsInput<Entry, IEntryHandler>
 {{
+    public EntityViewsTextInput()
+    {{
+        Input.BackgroundColor = Colors.Transparent;
+        Input.TextChanged += OnTextChanged;
+    }}
+
+    protected override bool CanRestoreLabelOnUnFocus => string.IsNullOrWhiteSpace(Input.Text);
+
     protected override void OnInputHandlerChanged(IEntryHandler handler)
     {{
 #if IOS || MACCATALYST
@@ -516,45 +646,34 @@ public class EntityViewsTextInput : EntityViewsInput<Entry, IEntryHandler>
         handler.PlatformView.Style = null;
 #endif
     }}
+
+    private async void OnTextChanged(object? sender, EventArgs e)
+    {{
+        if (_isFirstBinding)
+        {{
+            if (!string.IsNullOrWhiteSpace(Input.Text)) SetInputFocus(transformViewBox: false);
+            _isFirstBinding = false;
+        }}
+
+        if (await UserKeepsTyping()) return;
+
+        ((ValidableViewModel)BindingContext).ValidateDirtyProperty(
+            _propertyName, Input.Text is not null && Input.Text.Length > 0);
+    }}
+
+    private async Task<bool> UserKeepsTyping()
+    {{
+        var txt = Input.Text;
+        await Task.Delay(500);
+        return txt != Input.Text;
+    }}
 }}
 
 public class EntityViewsNumberInput : EntityViewsTextInput
-{{ }}
-
-public class EntityViewsSliderInput : EntityViewsInput<Slider, ISliderHandler>
 {{
-    protected override void OnInputHandlerChanged(ISliderHandler handler)
-    {{ }}
-}}
-
-public class EntityViewsStepperInput : EntityViewsInput<Stepper, IStepperHandler>
-{{
-    protected override void OnInputHandlerChanged(IStepperHandler handler)
-    {{ }}
-}}
-
-public class EntityViewsSwitchInput : EntityViewsInput<Switch, ISwitchHandler>
-{{
-    protected override void OnInputHandlerChanged(ISwitchHandler handler)
-    {{ }}
-}}
-
-public class EntityViewsTimePickerInput : EntityViewsInput<TimePicker, ITimePickerHandler>
-{{
-    protected override void OnInputHandlerChanged(ITimePickerHandler handler)
+    public EntityViewsNumberInput()
     {{
-//#if ANDROID
-//        handler.PlatformView.BackgroundTintList =
-//            Android.Content.Res.ColorStateList.ValueOf(
-//                Microsoft.Maui.Controls.Compatibility.Platform.Android.ColorExtensions.ToAndroid(Colors.Transparent));
-//#elif IOS && !MACCATALYST
-//        handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
-//#elif MACCATALYST
-//        // how?
-//#elif WINDOWS
-//        handler.PlatformView.BorderThickness = new Microsoft.UI.Xaml.Thickness(0);
-//        handler.PlatformView.Style = null;
-//#endif
+        Input.Keyboard = Keyboard.Numeric;
     }}
 }}
 ";

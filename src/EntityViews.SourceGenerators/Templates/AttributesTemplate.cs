@@ -75,10 +75,9 @@ public static class FormKind
     public const int None = 0;
 
     /// <summary>
-    /// Uses CommunityToolkit.Maui.Markup compiled bindings to generate the forms,
-    /// CommunityToolkit.Maui.Markup must be installed manually.
+    /// Generates form for Maui, if CommunityToolkit.Maui.Markup is available, compiled bindings will be used.
     /// </summary>
-    public const int MauiMarkup = 1;
+    public const int Maui = 1;
 }
 
 /// <summary>

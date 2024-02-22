@@ -1,6 +1,6 @@
 ﻿using System.Collections.Immutable;
+using EntityViews.SourceGenerators.FormsGeneration;
 using EntityViews.SourceGenerators.Templates;
-using EntityViews.SourceGenerators.Templates.Maui;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -114,7 +114,11 @@ public class EntityViewsGenerator : IIncrementalGenerator
     {
         if (classes.IsDefaultOrEmpty) return;
 
-        var generatedBaseTypes = false;
+        var isInitialized = false;
+        var formsGenerator = new Dictionary<int, FormGenerator>
+        {
+            [1] = new MauiGenerator()
+        };
 
         foreach (var analysis in classes.Distinct())
         {
@@ -144,34 +148,15 @@ public class EntityViewsGenerator : IIncrementalGenerator
                 $"{classDeclaration.Identifier}.g.cs",
                 ViewModelTemplate.Build(compilation, classDeclaration, properties));
 
-            if (analysis.Form == 0) continue;
+            if (!formsGenerator.TryGetValue(analysis.Form, out var formGenerator)) continue;
 
-            var rootNamespace =
-                compilation.Assembly.GlobalNamespace.GetNamespaceMembers().FirstOrDefault()?.Name
-                ?? string.Empty;
-
-            // add more kind of forms here?
-            if (analysis.Form == 1)
+            if (!isInitialized)
             {
-                if (!generatedBaseTypes)
-                {
-                    context.AddSource("EntityViews.Input.g.cs", _MauiDefaultInputs.Build());
-                    generatedBaseTypes = true;
-                }
-
-                foreach (var property in properties)
-                {
-                    context.AddSource(
-                        $"{classDeclaration.Identifier}.{property.Name}.Input.g.cs",
-                        MauiFormPropertyTemplate.Build(
-                            compilation,
-                            classDeclaration.Identifier.ToString(),
-                            classDeclaration.GetNameSpace() ?? string.Empty,
-                            $"{rootNamespace}.EntityForms.{analysis.ViewModelOf.Name}",
-                            property,
-                            analysis));
-                }
+                formGenerator.Initialize(compilation, context);
+                isInitialized = true;
             }
+
+            formGenerator.Generate(new(compilation, context, classDeclaration, analysis, properties));
         }
     }
 }

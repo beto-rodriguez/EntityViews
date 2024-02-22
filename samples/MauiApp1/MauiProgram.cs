@@ -1,8 +1,6 @@
 ﻿using CommunityToolkit.Maui;
 using CommunityToolkit.Maui.Markup;
 using Microsoft.Extensions.Logging;
-using Microsoft.Maui.Handlers;
-using Microsoft.Maui.Platform;
 using UraniumUI;
 
 namespace MauiApp1;
