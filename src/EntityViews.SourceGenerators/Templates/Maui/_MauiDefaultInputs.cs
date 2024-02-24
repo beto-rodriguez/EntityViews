@@ -113,6 +113,12 @@ public abstract class EntityViewsInput<TInput, THandler> : VerticalStackLayout, 
         _inputLayout.Children.Add(input);
         _inputLayout.Children.Add(_activeBoxView);
 
+        SizeChanged += (_, _) =>
+        {{
+            _inputLayout.WidthRequest = Width;
+            _inputLayout.HeightRequest = Height;
+        }};
+
         Children.Add(_inputLayout);
         Children.Add(_validationBorder);
 
